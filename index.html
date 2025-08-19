@@ -12,6 +12,8 @@
             --accent-green: #00cc66;
             --accent-white: #ffffff;
             --accent-gray: #888888;
+            --accent-red: #ff4d4d;
+            --accent-blue: #4d94ff;
         }
 
         * {
@@ -30,7 +32,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
@@ -42,6 +44,7 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
             border: 1px solid var(--accent-green);
+            position: relative;
         }
 
         h1 {
@@ -60,6 +63,37 @@
         .subtitle {
             color: var(--accent-gray);
             font-size: 1.2rem;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            background: var(--secondary-dark);
+            border: 1px solid #333;
+            color: var(--accent-white);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-green);
+            color: var(--primary-dark);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .players-container {
@@ -109,6 +143,15 @@
             color: var(--accent-white);
         }
 
+        .player-wins {
+            margin-right: auto;
+            background: var(--accent-green);
+            color: var(--primary-dark);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
         .teams-list {
             list-style: none;
         }
@@ -135,6 +178,84 @@
 
         .team-name {
             font-size: 1.1rem;
+        }
+
+        .team-status {
+            margin-right: auto;
+            font-size: 0.9rem;
+            padding: 3px 8px;
+            border-radius: 5px;
+        }
+
+        .team-active {
+            background: rgba(0, 204, 102, 0.2);
+            color: var(--accent-green);
+        }
+
+        .team-eliminated {
+            background: rgba(255, 77, 77, 0.2);
+            color: var(--accent-red);
+        }
+
+        .matches-container {
+            background: var(--secondary-dark);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+        }
+
+        .round-title {
+            color: var(--accent-green);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .match {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .team {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .vs {
+            margin: 0 15px;
+            color: var(--accent-gray);
+            font-weight: bold;
+        }
+
+        .score {
+            display: flex;
+            gap: 10px;
+            margin: 0 15px;
+        }
+
+        .score-input {
+            width: 40px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: var(--accent-white);
+            padding: 5px;
+        }
+
+        .match-winner {
+            font-weight: bold;
+            color: var(--accent-green);
+            margin-top: 5px;
         }
 
         .controls {
@@ -201,6 +322,64 @@
             color: var(--accent-gray);
         }
 
+        .winner-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--secondary-dark), var(--primary-dark));
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 204, 102, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 204, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 204, 102, 0); }
+        }
+
+        .winner-title {
+            font-size: 2rem;
+            color: var(--accent-green);
+            margin-bottom: 15px;
+        }
+
+        .winner-name {
+            font-size: 2.5rem;
+            color: var(--accent-white);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 204, 102, 0.5);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--secondary-dark);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .history-table th, .history-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .history-table th {
+            background: var(--accent-green);
+            color: var(--primary-dark);
+        }
+
+        .history-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         footer {
             text-align: center;
             margin-top: 40px;
@@ -222,6 +401,23 @@
             .player-name {
                 font-size: 1.3rem;
             }
+            
+            .match {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .team {
+                margin-bottom: 10px;
+            }
+            
+            .score {
+                margin: 10px 0;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -235,89 +431,252 @@
             <p class="subtitle">اختر 3 فرق وتحدى أصدقائك للفوز بالبطولة!</p>
         </header>
 
-        <div class="tournament-status">
-            <h2 class="status-title">حالة البطولة</h2>
-            <p class="status-text">البطولة لم تبدأ بعد</p>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="teams">الفرق واللاعبين</button>
+            <button class="tab-btn" data-tab="tournament">المباريات</button>
+            <button class="tab-btn" data-tab="history">سجل البطولات</button>
         </div>
 
-        <div class="players-container">
-            <div class="player-card">
-                <div class="player-header">
-                    <div class="player-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h2 class="player-name">Shams</h2>
-                </div>
-                <ul class="teams-list">
-                    <li class="team-item">
-                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="team-name">باريس سان جيرمان</span>
-                    </li>
-                    <li class="team-item">
-                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="team-name">روما</span>
-                    </li>
-                    <li class="team-item">
-                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="team-name">برشلونة</span>
-                    </li>
-                </ul>
+        <div class="tab-content active" id="teams-tab">
+            <div class="tournament-status">
+                <h2 class="status-title">حالة البطولة</h2>
+                <p class="status-text">البطولة لم تبدأ بعد</p>
             </div>
 
-            <div class="player-card">
-                <div class="player-header">
-                    <div class="player-icon">
-                        <i class="fas fa-user"></i>
+            <div class="players-container">
+                <div class="player-card">
+                    <div class="player-header">
+                        <div class="player-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h2 class="player-name">Shams</h2>
+                        <span class="player-wins">4 انتصارات</span>
                     </div>
-                    <h2 class="player-name">Osama</h2>
+                    <ul class="teams-list">
+                        <li class="team-item">
+                            <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="team-name">باريس سان جيرمان</span>
+                            <span class="team-status team-active">نشط</span>
+                        </li>
+                        <li class="team-item">
+                            <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="team-name">روما</span>
+                            <span class="team-status team-active">نشط</span>
+                        </li>
+                        <li class="team-item">
+                            <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="team-name">برشلونة</span>
+                            <span class="team-status team-active">نشط</span>
+                        </li>
+                    </ul>
                 </div>
-                <ul class="teams-list">
-                    <li class="team-item">
-                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="team-name">بنفيكا</span>
-                    </li>
-                    <li class="team-item">
-                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="team-name">مانشستر يونايتد</span>
-                    </li>
-                    <li class="team-item">
-                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="team-name">ليفربول</span>
-                    </li>
-                </ul>
+
+                <div class="player-card">
+                    <div class="player-header">
+                        <div class="player-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h2 class="player-name">Osama</h2>
+                        <span class="player-wins">3 انتصارات</span>
+                    </div>
+                    <ul class="teams-list">
+                        <li class="team-item">
+                            <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="team-name">بنفيكا</span>
+                            <span class="team-status team-active">نشط</span>
+                        </li>
+                        <li class="team-item">
+                            <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="team-name">مانشستر يونايتد</span>
+                            <span class="team-status team-active">نشط</span>
+                        </li>
+                        <li class="team-item">
+                            <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="team-name">ليفربول</span>
+                            <span class="team-status team-active">نشط</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="player-card">
+                    <div class="player-header">
+                        <div class="player-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h2 class="player-name">Ayman</h2>
+                        <span class="player-wins">2 انتصارات</span>
+                    </div>
+                    <ul class="teams-list">
+                        <li class="team-item">
+                            <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="team-name">تشيلسي</span>
+                            <span class="team-status team-active">نشط</span>
+                        </li>
+                        <li class="team-item">
+                            <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="team-name">ريال مدريد</span>
+                            <span class="team-status team-active">نشط</span>
+                        </li>
+                        <li class="team-item">
+                            <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span class="team-name">ارسنال</span>
+                            <span class="team-status team-active">نشط</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="player-card">
-                <div class="player-header">
-                    <div class="player-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h2 class="player-name">Ayman</h2>
-                </div>
-                <ul class="teams-list">
-                    <li class="team-item">
-                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="team-name">تشيلسي</span>
-                    </li>
-                    <li class="team-item">
-                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="team-name">ريال مدريد</span>
-                    </li>
-                    <li class="team-item">
-                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
-                        <span class="team-name">ارسنال</span>
-                    </li>
-                </ul>
+            <div class="controls">
+                <button class="btn btn-primary" id="start-tournament">
+                    <i class="fas fa-play"></i> بدء البطولة
+                </button>
+                <button class="btn btn-secondary" id="reset-tournament">
+                    <i class="fas fa-redo"></i> إعادة تعيين
+                </button>
             </div>
         </div>
 
-        <div class="controls">
-            <button class="btn btn-primary">
-                <i class="fas fa-play"></i> بدء البطولة
-            </button>
-            <button class="btn btn-secondary">
-                <i class="fas fa-sync-alt"></i> تحديث النتائج
-            </button>
+        <div class="tab-content" id="tournament-tab">
+            <div class="matches-container">
+                <h3 class="round-title">الجولة الأولى</h3>
+                
+                <div class="match">
+                    <div class="team">
+                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                        <span class="team-name">باريس سان جيرمان (Shams)</span>
+                    </div>
+                    <div class="vs">VS</div>
+                    <div class="team">
+                        <span class="team-name">بنفيكا (Osama)</span>
+                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                    </div>
+                    <div class="score">
+                        <input type="number" class="score-input" min="0" value="2">
+                        <span>:</span>
+                        <input type="number" class="score-input" min="0" value="1">
+                    </div>
+                    <div class="match-winner">باريس سان جيرمان فاز</div>
+                </div>
+                
+                <div class="match">
+                    <div class="team">
+                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                        <span class="team-name">روما (Shams)</span>
+                    </div>
+                    <div class="vs">VS</div>
+                    <div class="team">
+                        <span class="team-name">مانشستر يونايتد (Osama)</span>
+                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                    </div>
+                    <div class="score">
+                        <input type="number" class="score-input" min="0" value="1">
+                        <span>:</span>
+                        <input type="number" class="score-input" min="0" value="3">
+                    </div>
+                    <div class="match-winner">مانشستر يونايتد فاز</div>
+                </div>
+                
+                <div class="match">
+                    <div class="team">
+                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                        <span class="team-name">برشلونة (Shams)</span>
+                    </div>
+                    <div class="vs">VS</div>
+                    <div class="team">
+                        <span class="team-name">ليفربول (Osama)</span>
+                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                    </div>
+                    <div class="score">
+                        <input type="number" class="score-input" min="0" value="2">
+                        <span>:</span>
+                        <input type="number" class="score-input" min="0" value="2">
+                    </div>
+                    <button class="btn btn-primary">تحديد الفائز</button>
+                </div>
+            </div>
+
+            <div class="matches-container">
+                <h3 class="round-title">الجولة الثانية</h3>
+                
+                <div class="match">
+                    <div class="team">
+                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                        <span class="team-name">تشيلسي (Ayman)</span>
+                    </div>
+                    <div class="vs">VS</div>
+                    <div class="team">
+                        <span class="team-name">ريال مدريد (Ayman)</span>
+                        <span class="team-icon"><i class="fas fa-shield-alt"></i></span>
+                    </div>
+                    <div class="score">
+                        <input type="number" class="score-input" min="0" value="0">
+                        <span>:</span>
+                        <input type="number" class="score-input" min="0" value="0">
+                    </div>
+                    <button class="btn btn-primary">تحديد الفائز</button>
+                </div>
+            </div>
+
+            <div class="winner-section">
+                <h2 class="winner-title">بطل البطولة الحالي</h2>
+                <p class="winner-name">Shams</p>
+                <p>مع فريق باريس سان جيرمان</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="history-tab">
+            <div class="matches-container">
+                <h3 class="round-title">سجل البطولات السابقة</h3>
+                
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>البطولة</th>
+                            <th>الفائز</th>
+                            <th>الفريق الفائز</th>
+                            <th>الوصيف</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>البطولة الأولى</td>
+                            <td>Shams</td>
+                            <td>برشلونة</td>
+                            <td>Osama</td>
+                            <td>10/08/2023</td>
+                        </tr>
+                        <tr>
+                            <td>البطولة الثانية</td>
+                            <td>Osama</td>
+                            <td>مانشستر يونايتد</td>
+                            <td>Ayman</td>
+                            <td>17/08/2023</td>
+                        </tr>
+                        <tr>
+                            <td>البطولة الثالثة</td>
+                            <td>Shams</td>
+                            <td>روما</td>
+                            <td>Osama</td>
+                            <td>24/08/2023</td>
+                        </tr>
+                        <tr>
+                            <td>البطولة الرابعة</td>
+                            <td>Ayman</td>
+                            <td>ريال مدريد</td>
+                            <td>Shams</td>
+                            <td>01/09/2023</td>
+                        </tr>
+                        <tr>
+                            <td>البطولة الخامسة</td>
+                            <td>Shams</td>
+                            <td>باريس سان جيرمان</td>
+                            <td>Ayman</td>
+                            <td>08/09/2023</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <footer>
@@ -347,34 +706,46 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // دالة لتحديث واجهة المستخدم بناءً على البيانات من Firebase
-        function updateUI(data) {
-            if (data) {
-                console.log("تم استلام البيانات:", data);
-                // هنا يمكنك تحديث الواجهة بناءً على البيانات
-            }
-        }
+        // عناصر التحكم
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const startBtn = document.getElementById('start-tournament');
+        const resetBtn = document.getElementById('reset-tournament');
 
-        // استمع للتغييرات في قاعدة البيانات
-        db.collection("tournament").doc("current")
-            .onSnapshot((doc) => {
-                if (doc.exists) {
-                    updateUI(doc.data());
-                } else {
-                    console.log("لا توجد بيانات متاحة!");
-                }
+        // نظام التبويب
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                
+                // إزالة النشاط من جميع الأزرار والمحتويات
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // إضافة النشاط للعناصر المحددة
+                btn.classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
             });
+        });
 
-        // دالة لبدء البطولة
-        document.querySelector('.btn-primary').addEventListener('click', function() {
-            // هنا يمكنك إضافة كود لبدء البطولة
-            alert('تم بدء البطولة! سيتم تحديث النتائج قريبًا.');
+        // بدء البطولة
+        startBtn.addEventListener('click', () => {
+            alert('تم بدء البطولة! سيتم إنشاء المباريات تلقائياً.');
             
-            // مثال على حفظ البيانات في Firebase
+            // هنا يمكنك إضافة كود لإنشاء المباريات وتوزيع الفرق
+            generateMatches();
+            
+            // الانتقال إلى تبويب المباريات
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="tournament"]').classList.add('active');
+            document.getElementById('tournament-tab').classList.add('active');
+            
+            // حفظ حالة البطولة في Firebase
             db.collection("tournament").doc("current").set({
                 started: true,
                 startTime: new Date(),
-                players: ["Shams", "Osama", "Ayman"]
+                players: ["Shams", "Osama", "Ayman"],
+                matches: generateMatchesData()
             })
             .then(() => {
                 console.log("تم بدء البطولة وحفظ البيانات!");
@@ -384,23 +755,75 @@
             });
         });
 
-        // دالة لتحديث النتائج
-        document.querySelector('.btn-secondary').addEventListener('click', function() {
-            // هنا يمكنك إضافة كود لتحديث النتائج
-            alert('جارٍ تحديث النتائج...');
-            
-            // جلب البيانات من Firebase
-            db.collection("tournament").doc("current").get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        console.log("البيانات الحالية:", doc.data());
-                    } else {
-                        console.log("لا توجد بيانات متاحة!");
-                    }
+        // إعادة تعيين البطولة
+        resetBtn.addEventListener('click', () => {
+            if(confirm('هل أنت متأكد من أنك تريد إعادة تعيين البطولة؟ سيتم مسح جميع البيانات.')) {
+                alert('تم إعادة تعيين البطولة.');
+                
+                // مسح بيانات البطولة من Firebase
+                db.collection("tournament").doc("current").delete()
+                .then(() => {
+                    console.log("تم مسح بيانات البطولة!");
                 })
                 .catch((error) => {
-                    console.log("Error getting document:", error);
+                    console.error("Error removing document: ", error);
                 });
+            }
+        });
+
+        // دالة لتوليد المباريات (وهمية للعرض)
+        function generateMatches() {
+            // في التطبيق الحقيقي، سيتم إنشاء المباريات بناءً على نظام البطولة
+            console.log("تم إنشاء المباريات بنجاح");
+        }
+
+        // دالة لتوليد بيانات المباريات (وهمية للعرض)
+        function generateMatchesData() {
+            return [
+                { round: 1, team1: "باريس سان جيرمان", team2: "بنفيكا", score1: 2, score2: 1 },
+                { round: 1, team1: "روما", team2: "مانشستر يونايتد", score1: 1, score2: 3 },
+                { round: 1, team1: "برشلونة", team2: "ليفربول", score1: 2, score2: 2 },
+                { round: 2, team1: "تشيلسي", team2: "ريال مدريد", score1: 0, score2: 0 }
+            ];
+        }
+
+        // استمع للتغييرات في قاعدة البيانات
+        db.collection("tournament").doc("current")
+            .onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    console.log("تم استلام البيانات:", data);
+                    updateUI(data);
+                } else {
+                    console.log("لا توجد بيانات متاحة!");
+                }
+            });
+
+        // دالة لتحديث واجهة المستخدم بناءً على البيانات من Firebase
+        function updateUI(data) {
+            if (data && data.started) {
+                document.querySelector('.status-text').textContent = "البطولة جارية";
+                
+                // هنا يمكنك تحديث الواجهة بناءً على بيانات المباريات
+            }
+        }
+
+        // محاكاة تحديد النتائج
+        const scoreInputs = document.querySelectorAll('.score-input');
+        scoreInputs.forEach(input => {
+            input.addEventListener('change', () => {
+                const match = input.closest('.match');
+                const score1 = parseInt(match.querySelectorAll('.score-input')[0].value);
+                const score2 = parseInt(match.querySelectorAll('.score-input')[1].value);
+                
+                if (score1 > score2) {
+                    match.querySelector('.match-winner').textContent = `${match.querySelectorAll('.team-name')[0].textContent} فاز`;
+                } else if (score2 > score1) {
+                    match.querySelector('.match-winner').textContent = `${match.querySelectorAll('.team-name')[1].textContent} فاز`;
+                } else {
+                    match.querySelector('.match-winner').textContent = "تعادل";
+                }
+            });
         });
     </script>
 </body>
