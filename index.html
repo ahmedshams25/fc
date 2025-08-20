@@ -45,7 +45,6 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
             border: 1px solid var(--accent-green);
-            position: relative;
         }
 
         h1 {
@@ -588,21 +587,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5gpwJFHEFr1ePwdQ6sV_kUVXomtVss9U",
-            authDomain: "fc-mobile-9502f.firebaseapp.com",
-            projectId: "fc-mobile-9502f",
-            storageBucket: "fc-mobile-9502f.firebasestorage.app",
-            messagingSenderId: "306392548442",
-            appId: "1:306392548442:web:fb0f8467a407675ae24463",
-            measurementId: "G-T7EXKHF2DE"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
         // بيانات اللاعبين والفرق
         const playersData = {
             "Shams": ["باريس سان جيرمان", "روما", "برشلونة"],
@@ -637,6 +621,7 @@
         function initApp() {
             setupEventListeners();
             loadTournamentState();
+            updateUI();
         }
 
         // إعداد مستمعي الأحداث
@@ -665,6 +650,7 @@
         function startTournament() {
             tournamentState.started = true;
             tournamentState.currentRound = 1;
+            tournamentState.winner = null;
             
             // تهيئة حالة اللاعبين
             for (const player in playersData) {
@@ -689,6 +675,8 @@
             tabContents.forEach(c => c.classList.remove('active'));
             document.querySelector('[data-tab="tournament"]').classList.add('active');
             document.getElementById('tournament-tab').classList.add('active');
+            
+            alert('تم بدء البطولة! انتقل إلى تبويب المباريات لإدخال النتائج.');
         }
 
         // إنشاء المباريات
@@ -840,64 +828,68 @@
                 tabContents.forEach(c => c.classList.remove('active'));
                 document.querySelector('[data-tab="teams"]').classList.add('active');
                 document.getElementById('teams-tab').classList.add('active');
+                
+                alert('تم إعادة تعيين البطولة. يمكنك بدء بطولة جديدة الآن.');
             }
         }
 
-        // حفظ حالة البطولة في Firebase
+        // حفظ حالة البطولة في localStorage
         function saveTournamentState() {
-            db.collection("tournament").doc("current").set(tournamentState)
-            .then(() => {
-                console.log("تم حفظ حالة البطولة!");
-            })
-            .catch((error) => {
-                console.error("Error saving tournament state: ", error);
-            });
+            localStorage.setItem('tournamentState', JSON.stringify(tournamentState));
         }
 
-        // تحميل حالة البطولة من Firebase
+        // تحميل حالة البطولة من localStorage
         function loadTournamentState() {
-            db.collection("tournament").doc("current").onSnapshot((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    tournamentState = data;
-                    updateUI();
-                } else {
-                    console.log("لا توجد بيانات بطولة، سيتم استخدام الحالة الافتراضية");
-                    updateUI();
-                }
-            });
-            
-            // تحميل سجل البطولات من localStorage
-            loadHistory();
+            const savedState = localStorage.getItem('tournamentState');
+            if (savedState) {
+                tournamentState = JSON.parse(savedState);
+            }
         }
 
         // تحميل سجل البطولات
         function loadHistory() {
-            // محاكاة لبيانات التاريخ (في التطبيق الحقيقي سيتم جلبها من Firebase)
-            const mockHistory = [
-                { winner: "Shams", team: "برشلونة", date: "10/08/2023" },
-                { winner: "Osama", team: "مانشستر يونايتد", date: "17/08/2023" },
-                { winner: "Shams", team: "روما", date: "24/08/2023" },
-                { winner: "Ayman", team: "ريال مدريد", date: "01/09/2023" },
-                { winner: "Shams", team: "باريس سان جيرمان", date: "08/09/2023" }
-            ];
-            
-            // دمج السجل المحمل من Firebase مع المحاكاة
-            const fullHistory = [...tournamentState.history || [], ...mockHistory];
-            
-            // عرض سجل البطولات
             historyTableBody.innerHTML = '';
-            fullHistory.forEach((item, index) => {
+            
+            tournamentState.history.forEach((item, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>البطولة ${index + 1}</td>
                     <td>${item.winner}</td>
                     <td>${item.team}</td>
-                    <td>${item.winner === "Shams" ? "Osama" : item.winner === "Osama" ? "Ayman" : "Shams"}</td>
+                    <td>${findRunnerUp(item.winner)}</td>
                     <td>${item.date}</td>
                 `;
                 historyTableBody.appendChild(row);
             });
+            
+            // إذا لم يكن هناك تاريخ، أضف بعض البيانات الوهمية للعرض
+            if (tournamentState.history.length === 0) {
+                const mockHistory = [
+                    { winner: "Shams", team: "برشلونة", date: "10/08/2023" },
+                    { winner: "Osama", team: "مانشستر يونايتد", date: "17/08/2023" },
+                    { winner: "Shams", team: "روما", date: "24/08/2023" },
+                    { winner: "Ayman", team: "ريال مدريد", date: "01/09/2023" },
+                    { winner: "Shams", team: "باريس سان جيرمان", date: "08/09/2023" }
+                ];
+                
+                mockHistory.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>البطولة ${index + 1}</td>
+                        <td>${item.winner}</td>
+                        <td>${item.team}</td>
+                        <td>${findRunnerUp(item.winner)}</td>
+                        <td>${item.date}</td>
+                    `;
+                    historyTableBody.appendChild(row);
+                });
+            }
+        }
+
+        // العثور على الوصيف (وظيفة مساعدة)
+        function findRunnerUp(winner) {
+            const players = Object.keys(playersData);
+            return players.filter(player => player !== winner)[0];
         }
 
         // تحديث واجهة المستخدم
@@ -905,6 +897,7 @@
             updatePlayersTab();
             updateMatchesTab();
             updateTournamentStatus();
+            loadHistory();
         }
 
         // تحديث تبويب اللاعبين
@@ -990,9 +983,9 @@
                             if (match.completed) {
                                 matchContent += `
                                     <div class="score">
-                                        <span class="score-input">${match.score1}</span>
+                                        <span class="score-input" style="background: transparent; border: none;">${match.score1}</span>
                                         <span>:</span>
-                                        <span class="score-input">${match.score2}</span>
+                                        <span class="score-input" style="background: transparent; border: none;">${match.score2}</span>
                                     </div>
                                     <div class="match-winner">
                                         ${match.score1 > match.score2 ? match.team1.team : match.score2 > match.score1 ? match.team2.team : 'تعادل'}
@@ -1001,12 +994,12 @@
                             } else {
                                 matchContent += `
                                     <div class="score">
-                                        <input type="number" class="score-input" id="score1-${round}-${index}" min="0" value="${match.score1}">
+                                        <input type="number" class="score-input" id="score1-${index}" min="0" value="${match.score1}">
                                         <span>:</span>
-                                        <input type="number" class="score-input" id="score2-${round}-${index}" min="0" value="${match.score2}">
+                                        <input type="number" class="score-input" id="score2-${index}" min="0" value="${match.score2}">
                                     </div>
                                     <div class="match-actions">
-                                        <button class="btn btn-primary btn-sm" onclick="updateScore(${index}, ${round})">
+                                        <button class="btn btn-primary btn-sm" onclick="updateScore(${index})">
                                             <i class="fas fa-save"></i> حفظ
                                         </button>
                                     </div>
@@ -1057,16 +1050,22 @@
         }
 
         // جعل updateScore متاحة globally للاستخدام في الأزرار
-        window.updateScore = function(matchIndex, round) {
-            const score1 = document.getElementById(`score1-${round}-${matchIndex}`).value;
-            const score2 = document.getElementById(`score2-${round}-${matchIndex}`).value;
+        window.updateScore = function(matchIndex) {
+            const score1 = document.getElementById(`score1-${matchIndex}`).value;
+            const score2 = document.getElementById(`score2-${matchIndex}`).value;
             
             if (score1 === '' || score2 === '') {
                 alert('يرجى إدخال النتيجتين');
                 return;
             }
             
+            if (score1 < 0 || score2 < 0) {
+                alert('يرجى إدخال نتائج صحيحة (أكبر من أو تساوي 0)');
+                return;
+            }
+            
             updateScore(matchIndex, score1, score2);
+            alert('تم حفظ النتيجة!');
         };
 
         // تهيئة التطبيق عند تحميل الصفحة
