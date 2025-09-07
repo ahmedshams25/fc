@@ -83,6 +83,12 @@
             max-width: 300px;
             text-align: center;
             border-top: 4px solid var(--primary-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .player-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
         
         .player-name {
@@ -95,6 +101,17 @@
             font-size: 32px;
             font-weight: bold;
             margin: 10px 0;
+            transition: all 0.3s;
+        }
+        
+        .wins-updated {
+            animation: pulse 0.5s;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
         
         .btn-group {
@@ -111,16 +128,41 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
         }
         
         button:hover {
             background-color: #00b359;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(1px);
         }
         
         .btn-small {
             padding: 5px 10px;
             font-size: 14px;
+        }
+        
+        .btn-win {
+            font-size: 18px;
+            font-weight: bold;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-win.add {
+            background-color: #00cc66;
+        }
+        
+        .btn-win.remove {
+            background-color: #ff4d4d;
         }
         
         .add-win-form {
@@ -161,6 +203,11 @@
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
+            transition: background-color 0.3s;
+        }
+        
+        .match-item:hover {
+            background-color: #2a2a2a;
         }
         
         .match-item:last-child {
@@ -213,6 +260,29 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+        
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            margin-top: 10px;
+            color: #888;
+        }
+        
+        .sync-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #00cc66;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
         
         @media (min-width: 768px) {
@@ -296,8 +366,12 @@
                     <div>عدد الفوز اليوم:</div>
                     <div class="wins-today" id="player1-wins">0</div>
                     <div class="btn-group">
-                        <button onclick="addWin('player1')" class="btn-small">+</button>
-                        <button onclick="removeWin('player1')" class="btn-small">-</button>
+                        <button onclick="addWin('player1')" class="btn-win add">+</button>
+                        <button onclick="removeWin('player1')" class="btn-win remove">-</button>
+                    </div>
+                    <div class="sync-status">
+                        <div class="sync-indicator"></div>
+                        <span>مزامنة تلقائية</span>
                     </div>
                 </div>
                 
@@ -306,8 +380,12 @@
                     <div>عدد الفوز اليوم:</div>
                     <div class="wins-today" id="player2-wins">0</div>
                     <div class="btn-group">
-                        <button onclick="addWin('player2')" class="btn-small">+</button>
-                        <button onclick="removeWin('player2')" class="btn-small">-</button>
+                        <button onclick="addWin('player2')" class="btn-win add">+</button>
+                        <button onclick="removeWin('player2')" class="btn-win remove">-</button>
+                    </div>
+                    <div class="sync-status">
+                        <div class="sync-indicator"></div>
+                        <span>مزامنة تلقائية</span>
                     </div>
                 </div>
                 
@@ -316,8 +394,12 @@
                     <div>عدد الفوز اليوم:</div>
                     <div class="wins-today" id="player3-wins">0</div>
                     <div class="btn-group">
-                        <button onclick="addWin('player3')" class="btn-small">+</button>
-                        <button onclick="removeWin('player3')" class="btn-small">-</button>
+                        <button onclick="addWin('player3')" class="btn-win add">+</button>
+                        <button onclick="removeWin('player3')" class="btn-win remove">-</button>
+                    </div>
+                    <div class="sync-status">
+                        <div class="sync-indicator"></div>
+                        <span>مزامنة تلقائية</span>
                     </div>
                 </div>
             </div>
@@ -398,6 +480,7 @@
         let matches = [];
         let winsChart = null;
         let headToHeadChart = null;
+        let unsubscribe = null;
         
         // عرض واجهة تسجيل الدخول أو التسجيل
         function showLogin() {
@@ -465,6 +548,9 @@
         
         // تسجيل الخروج
         function logout() {
+            if (unsubscribe) {
+                unsubscribe();
+            }
             auth.signOut().then(() => {
                 document.getElementById('appContent').classList.add('hidden');
                 document.getElementById('loginSection').classList.remove('hidden');
@@ -482,10 +568,25 @@
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('registerSection').classList.add('hidden');
                 
-                // تحميل البيانات من Firebase
+                // الاشتراك في التحديثات في الوقت الحقيقي
                 const userDocRef = db.collection('users').doc(user.uid);
                 const todayDocRef = userDocRef.collection('days').doc(today);
                 
+                // الاشتراك في التحديثات في الوقت الحقيقي
+                unsubscribe = todayDocRef.onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        for (const key in data.players) {
+                            players[key] = data.players[key];
+                        }
+                        matches = data.matches || [];
+                        updateUI();
+                    }
+                }, (error) => {
+                    console.error("Error loading data:", error);
+                });
+                
+                // تحميل البيانات الأولية
                 todayDocRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
@@ -501,17 +602,33 @@
             }
         }
         
-        // زيادة عدد الفوز للاعب
+        // زيادة عدد الفوز للاعب مع تأثير مرئي
         function addWin(playerId) {
             players[playerId].wins++;
+            
+            // تأثير على العداد
+            const winsElement = document.getElementById(`${playerId}-wins`);
+            winsElement.classList.add('wins-updated');
+            setTimeout(() => {
+                winsElement.classList.remove('wins-updated');
+            }, 500);
+            
             updateUI();
             saveData();
         }
         
-        // تقليل عدد الفوز للاعب
+        // تقليل عدد الفوز للاعب مع تأثير مرئي
         function removeWin(playerId) {
             if (players[playerId].wins > 0) {
                 players[playerId].wins--;
+                
+                // تأثير على العداد
+                const winsElement = document.getElementById(`${playerId}-wins`);
+                winsElement.classList.add('wins-updated');
+                setTimeout(() => {
+                    winsElement.classList.remove('wins-updated');
+                }, 500);
+                
                 updateUI();
                 saveData();
             }
@@ -560,7 +677,8 @@
                 const data = {
                     players: players,
                     matches: matches,
-                    date: today
+                    date: today,
+                    lastUpdate: new Date()
                 };
                 
                 todayDocRef.set(data)
@@ -693,6 +811,9 @@
             if (user) {
                 loadUserData();
             } else {
+                if (unsubscribe) {
+                    unsubscribe();
+                }
                 document.getElementById('appContent').classList.add('hidden');
                 document.getElementById('loginSection').classList.remove('hidden');
             }
