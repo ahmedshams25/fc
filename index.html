@@ -52,11 +52,6 @@
             font-size: 24px;
         }
         
-        .auth-section {
-            display: flex;
-            gap: 10px;
-        }
-        
         .auth-btn {
             background-color: var(--primary-color);
             color: #000;
@@ -65,6 +60,11 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .auth-btn:hover {
+            background-color: #00b359;
         }
         
         .player-cards {
@@ -114,57 +114,6 @@
             100% { transform: scale(1); }
         }
         
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        button {
-            background-color: var(--primary-color);
-            color: #000;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        
-        button:hover {
-            background-color: #00b359;
-            transform: translateY(-2px);
-        }
-        
-        button:active {
-            transform: translateY(1px);
-        }
-        
-        .btn-small {
-            padding: 5px 10px;
-            font-size: 14px;
-        }
-        
-        .btn-win {
-            font-size: 18px;
-            font-weight: bold;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .btn-win.add {
-            background-color: #00cc66;
-        }
-        
-        .btn-win.remove {
-            background-color: #ff4d4d;
-        }
-        
         .add-win-form {
             background-color: var(--card-bg);
             border-radius: 10px;
@@ -196,6 +145,8 @@
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
         }
         
         .match-item {
@@ -365,10 +316,6 @@
                     <div class="player-name">ايمن الجمل</div>
                     <div>عدد الفوز اليوم:</div>
                     <div class="wins-today" id="player1-wins">0</div>
-                    <div class="btn-group">
-                        <button onclick="addWin('player1')" class="btn-win add">+</button>
-                        <button onclick="removeWin('player1')" class="btn-win remove">-</button>
-                    </div>
                     <div class="sync-status">
                         <div class="sync-indicator"></div>
                         <span>مزامنة تلقائية</span>
@@ -379,10 +326,6 @@
                     <div class="player-name">احمد شمس</div>
                     <div>عدد الفوز اليوم:</div>
                     <div class="wins-today" id="player2-wins">0</div>
-                    <div class="btn-group">
-                        <button onclick="addWin('player2')" class="btn-win add">+</button>
-                        <button onclick="removeWin('player2')" class="btn-win remove">-</button>
-                    </div>
                     <div class="sync-status">
                         <div class="sync-indicator"></div>
                         <span>مزامنة تلقائية</span>
@@ -393,10 +336,6 @@
                     <div class="player-name">اسامة عبدالوارث</div>
                     <div>عدد الفوز اليوم:</div>
                     <div class="wins-today" id="player3-wins">0</div>
-                    <div class="btn-group">
-                        <button onclick="addWin('player3')" class="btn-win add">+</button>
-                        <button onclick="removeWin('player3')" class="btn-win remove">-</button>
-                    </div>
                     <div class="sync-status">
                         <div class="sync-indicator"></div>
                         <span>مزامنة تلقائية</span>
@@ -539,7 +478,27 @@
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     // تم إنشاء الحساب بنجاح
-                    loadUserData();
+                    // إنشاء وثيقة المستخدم الأولى
+                    const user = auth.currentUser;
+                    if (user) {
+                        const userDocRef = db.collection('users').doc(user.uid);
+                        const todayDocRef = userDocRef.collection('days').doc(today);
+                        
+                        const initialData = {
+                            players: players,
+                            matches: matches,
+                            date: today,
+                            lastUpdate: new Date()
+                        };
+                        
+                        todayDocRef.set(initialData)
+                            .then(() => {
+                                loadUserData();
+                            })
+                            .catch((error) => {
+                                console.error("Error creating initial data:", error);
+                            });
+                    }
                 })
                 .catch((error) => {
                     errorElement.textContent = error.message;
@@ -581,56 +540,27 @@
                         }
                         matches = data.matches || [];
                         updateUI();
+                        console.log("تم مزامنة البيانات من Firebase");
+                    } else {
+                        // إذا لم تكن هناك بيانات لهذا اليوم، ننشئها
+                        const initialData = {
+                            players: players,
+                            matches: matches,
+                            date: today,
+                            lastUpdate: new Date()
+                        };
+                        
+                        todayDocRef.set(initialData)
+                            .then(() => {
+                                console.log("تم إنشاء بيانات جديدة لهذا اليوم");
+                            })
+                            .catch((error) => {
+                                console.error("Error creating daily data:", error);
+                            });
                     }
                 }, (error) => {
-                    console.error("Error loading data:", error);
+                    console.error("Error in real-time listener:", error);
                 });
-                
-                // تحميل البيانات الأولية
-                todayDocRef.get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        for (const key in data.players) {
-                            players[key] = data.players[key];
-                        }
-                        matches = data.matches || [];
-                        updateUI();
-                    }
-                }).catch((error) => {
-                    console.error("Error loading data:", error);
-                });
-            }
-        }
-        
-        // زيادة عدد الفوز للاعب مع تأثير مرئي
-        function addWin(playerId) {
-            players[playerId].wins++;
-            
-            // تأثير على العداد
-            const winsElement = document.getElementById(`${playerId}-wins`);
-            winsElement.classList.add('wins-updated');
-            setTimeout(() => {
-                winsElement.classList.remove('wins-updated');
-            }, 500);
-            
-            updateUI();
-            saveData();
-        }
-        
-        // تقليل عدد الفوز للاعب مع تأثير مرئي
-        function removeWin(playerId) {
-            if (players[playerId].wins > 0) {
-                players[playerId].wins--;
-                
-                // تأثير على العداد
-                const winsElement = document.getElementById(`${playerId}-wins`);
-                winsElement.classList.add('wins-updated');
-                setTimeout(() => {
-                    winsElement.classList.remove('wins-updated');
-                }, 500);
-                
-                updateUI();
-                saveData();
             }
         }
         
@@ -649,6 +579,13 @@
             
             // زيادة عدد الفوز للفائز
             players[winnerId].wins++;
+            
+            // تأثير على العداد
+            const winsElement = document.getElementById(`${winnerId}-wins`);
+            winsElement.classList.add('wins-updated');
+            setTimeout(() => {
+                winsElement.classList.remove('wins-updated');
+            }, 500);
             
             // زيادة عدد الانتصارات على الخاسر
             if (!players[winnerId].winsAgainst[loserId]) {
@@ -683,7 +620,7 @@
                 
                 todayDocRef.set(data)
                     .then(() => {
-                        console.log("Data saved successfully!");
+                        console.log("تم حفظ البيانات في Firebase");
                     })
                     .catch((error) => {
                         console.error("Error saving data:", error);
