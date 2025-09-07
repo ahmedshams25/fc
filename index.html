@@ -230,6 +230,14 @@
             animation: pulse 2s infinite;
         }
         
+        .sync-error {
+            background-color: #ff4d4d;
+        }
+        
+        .syncing {
+            background-color: #ffcc00;
+        }
+        
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -317,8 +325,8 @@
                     <div>عدد الفوز اليوم:</div>
                     <div class="wins-today" id="player1-wins">0</div>
                     <div class="sync-status">
-                        <div class="sync-indicator"></div>
-                        <span>مزامنة تلقائية</span>
+                        <div id="sync-indicator" class="sync-indicator"></div>
+                        <span id="sync-message">جاري المزامنة...</span>
                     </div>
                 </div>
                 
@@ -326,20 +334,12 @@
                     <div class="player-name">احمد شمس</div>
                     <div>عدد الفوز اليوم:</div>
                     <div class="wins-today" id="player2-wins">0</div>
-                    <div class="sync-status">
-                        <div class="sync-indicator"></div>
-                        <span>مزامنة تلقائية</span>
-                    </div>
                 </div>
                 
                 <div class="player-card" id="player3-card">
                     <div class="player-name">اسامة عبدالوارث</div>
                     <div>عدد الفوز اليوم:</div>
                     <div class="wins-today" id="player3-wins">0</div>
-                    <div class="sync-status">
-                        <div class="sync-indicator"></div>
-                        <span>مزامنة تلقائية</span>
-                    </div>
                 </div>
             </div>
             
@@ -420,6 +420,7 @@
         let winsChart = null;
         let headToHeadChart = null;
         let unsubscribe = null;
+        let isSyncing = false;
         
         // عرض واجهة تسجيل الدخول أو التسجيل
         function showLogin() {
@@ -531,6 +532,9 @@
                 const userDocRef = db.collection('users').doc(user.uid);
                 const todayDocRef = userDocRef.collection('days').doc(today);
                 
+                // تحديث حالة المزامنة
+                updateSyncStatus('syncing', 'جاري المزامنة...');
+                
                 // الاشتراك في التحديثات في الوقت الحقيقي
                 unsubscribe = todayDocRef.onSnapshot((doc) => {
                     if (doc.exists) {
@@ -540,6 +544,7 @@
                         }
                         matches = data.matches || [];
                         updateUI();
+                        updateSyncStatus('success', 'مزامنة ناجحة');
                         console.log("تم مزامنة البيانات من Firebase");
                     } else {
                         // إذا لم تكن هناك بيانات لهذا اليوم، ننشئها
@@ -552,20 +557,46 @@
                         
                         todayDocRef.set(initialData)
                             .then(() => {
+                                updateSyncStatus('success', 'تم إنشاء بيانات جديدة');
                                 console.log("تم إنشاء بيانات جديدة لهذا اليوم");
                             })
                             .catch((error) => {
+                                updateSyncStatus('error', 'خطأ في المزامنة');
                                 console.error("Error creating daily data:", error);
                             });
                     }
                 }, (error) => {
+                    updateSyncStatus('error', 'خطأ في المزامنة');
                     console.error("Error in real-time listener:", error);
                 });
             }
         }
         
+        // تحديث حالة المزامنة في الواجهة
+        function updateSyncStatus(status, message) {
+            const indicator = document.getElementById('sync-indicator');
+            const messageElement = document.getElementById('sync-message');
+            
+            indicator.classList.remove('syncing', 'sync-error');
+            isSyncing = false;
+            
+            if (status === 'syncing') {
+                indicator.classList.add('syncing');
+                isSyncing = true;
+            } else if (status === 'error') {
+                indicator.classList.add('sync-error');
+            }
+            
+            messageElement.textContent = message;
+        }
+        
         // تسجيل فوز على لاعب معين
         function addWinAgainst() {
+            if (isSyncing) {
+                alert("جاري مزامنة البيانات، يرجى الانتظار...");
+                return;
+            }
+            
             const winnerSelect = document.getElementById('winner');
             const loserSelect = document.getElementById('loser');
             
@@ -608,6 +639,8 @@
         function saveData() {
             const user = auth.currentUser;
             if (user) {
+                updateSyncStatus('syncing', 'جاري حفظ البيانات...');
+                
                 const userDocRef = db.collection('users').doc(user.uid);
                 const todayDocRef = userDocRef.collection('days').doc(today);
                 
@@ -620,9 +653,11 @@
                 
                 todayDocRef.set(data)
                     .then(() => {
+                        updateSyncStatus('success', 'تم حفظ البيانات');
                         console.log("تم حفظ البيانات في Firebase");
                     })
                     .catch((error) => {
+                        updateSyncStatus('error', 'خطأ في حفظ البيانات');
                         console.error("Error saving data:", error);
                     });
             }
