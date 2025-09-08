@@ -489,7 +489,7 @@
                             players: players,
                             matches: matches,
                             date: today,
-                            lastUpdate: new Date()
+                            lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
                         };
                         
                         todayDocRef.set(initialData)
@@ -544,7 +544,7 @@
                         }
                         matches = data.matches || [];
                         updateUI();
-                        updateSyncStatus('success', 'مزامنة ناجحة');
+                        updateSyncStatus('success', 'مزامنة ناجحة - ' + new Date().toLocaleTimeString('ar-EG'));
                         console.log("تم مزامنة البيانات من Firebase");
                     } else {
                         // إذا لم تكن هناك بيانات لهذا اليوم، ننشئها
@@ -552,7 +552,7 @@
                             players: players,
                             matches: matches,
                             date: today,
-                            lastUpdate: new Date()
+                            lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
                         };
                         
                         todayDocRef.set(initialData)
@@ -588,6 +588,15 @@
             }
             
             messageElement.textContent = message;
+            
+            // إخفاء رسالة النجاح بعد 3 ثواني
+            if (status === 'success') {
+                setTimeout(() => {
+                    if (messageElement.textContent === message) {
+                        messageElement.textContent = 'مزامنة تلقائية';
+                    }
+                }, 3000);
+            }
         }
         
         // تسجيل فوز على لاعب معين
@@ -648,17 +657,19 @@
                     players: players,
                     matches: matches,
                     date: today,
-                    lastUpdate: new Date()
+                    lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
                 todayDocRef.set(data)
                     .then(() => {
-                        updateSyncStatus('success', 'تم حفظ البيانات');
+                        updateSyncStatus('success', 'تم حفظ البيانات - ' + new Date().toLocaleTimeString('ar-EG'));
                         console.log("تم حفظ البيانات في Firebase");
                     })
                     .catch((error) => {
                         updateSyncStatus('error', 'خطأ في حفظ البيانات');
                         console.error("Error saving data:", error);
+                        // محاولة الحفظ مرة أخرى بعد 3 ثواني
+                        setTimeout(saveData, 3000);
                     });
             }
         }
@@ -724,7 +735,10 @@
                     responsive: true,
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
                         }
                     }
                 }
@@ -752,7 +766,7 @@
                 data: {
                     labels: [
                         `${players.player1.name} على ${players.player2.name}`,
-                        `${players.player1.name} на ${players.player3.name}`,
+                        `${players.player1.name} على ${players.player3.name}`,
                         `${players.player2.name} على ${players.player1.name}`,
                         `${players.player2.name} على ${players.player3.name}`,
                         `${players.player3.name} على ${players.player1.name}`,
@@ -769,8 +783,18 @@
                 options: {
                     responsive: true,
                     scales: {
+                        x: {
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
                         }
                     },
                     indexAxis: 'y'
