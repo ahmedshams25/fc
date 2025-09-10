@@ -407,11 +407,14 @@
         const db = firebase.database();
         
         // بيانات اللاعبين
-        const players = {
-            player1: { name: "ايمن الجمل", wins: 0, winsAgainst: {} },
-            player2: { name: "احمد شمس", wins: 0, winsAgainst: {} },
-            player3: { name: "اسامة عبدالوارث", wins: 0, winsAgainst: {} }
-        };
+db.ref("players").set(players)
+  .then(() => {
+    console.log("تم الحفظ بنجاح ✅");
+  })
+  .catch((error) => {
+    console.error("خطأ أثناء الحفظ ❌", error);
+  });
+
         
         // تاريخ اليوم
         const today = new Date().toLocaleDateString('ar-EG');
@@ -818,4 +821,5 @@
     </script>
 </body>
 </html>
+
 
