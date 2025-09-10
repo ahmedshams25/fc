@@ -6,7 +6,7 @@
     <title>تسجيل نتائج المباريات</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -407,14 +407,11 @@
         const db = firebase.database();
         
         // بيانات اللاعبين
-db.ref("players").set(players)
-  .then(() => {
-    console.log("تم الحفظ بنجاح ✅");
-  })
-  .catch((error) => {
-    console.error("خطأ أثناء الحفظ ❌", error);
-  });
-
+        const players = {
+            player1: { name: "ايمن الجمل", wins: 0, winsAgainst: {} },
+            player2: { name: "احمد شمس", wins: 0, winsAgainst: {} },
+            player3: { name: "اسامة عبدالوارث", wins: 0, winsAgainst: {} }
+        };
         
         // تاريخ اليوم
         const today = new Date().toLocaleDateString('ar-EG');
@@ -425,6 +422,7 @@ db.ref("players").set(players)
         let headToHeadChart = null;
         let unsubscribe = null;
         let isSyncing = false;
+        let currentUser = null;
         
         // عرض واجهة تسجيل الدخول أو التسجيل
         function showLogin() {
@@ -451,6 +449,7 @@ db.ref("players").set(players)
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     // تم تسجيل الدخول بنجاح
+                    currentUser = userCredential.user;
                     loadUserData();
                 })
                 .catch((error) => {
@@ -483,27 +482,24 @@ db.ref("players").set(players)
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     // تم إنشاء الحساب بنجاح
-                    // إنشاء وثيقة المستخدم الأولى
-                    const user = auth.currentUser;
-                    if (user) {
-                        const userDocRef = db.collection('users').doc(user.uid);
-                        const todayDocRef = userDocRef.collection('days').doc(today);
-                        
-                        const initialData = {
-                            players: players,
-                            matches: matches,
-                            date: today,
-                            lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-                        };
-                        
-                        todayDocRef.set(initialData)
-                            .then(() => {
-                                loadUserData();
-                            })
-                            .catch((error) => {
-                                console.error("Error creating initial data:", error);
-                            });
-                    }
+                    currentUser = userCredential.user;
+                    
+                    // إنشاء بيانات المستخدم الأولى
+                    const userDataPath = `users/${currentUser.uid}/days/${today}`;
+                    const initialData = {
+                        players: players,
+                        matches: matches,
+                        date: today,
+                        lastUpdate: Date.now()
+                    };
+                    
+                    db.ref(userDataPath).set(initialData)
+                        .then(() => {
+                            loadUserData();
+                        })
+                        .catch((error) => {
+                            console.error("Error creating initial data:", error);
+                        });
                 })
                 .catch((error) => {
                     errorElement.textContent = error.message;
@@ -520,29 +516,28 @@ db.ref("players").set(players)
                 document.getElementById('loginSection').classList.remove('hidden');
                 document.getElementById('email').value = '';
                 document.getElementById('password').value = '';
+                currentUser = null;
             });
         }
         
-        // تحميل بيانات المستخدم من Firebase
+        // تحميل بيانات المستخدم من Firebase Realtime Database
         function loadUserData() {
-            const user = auth.currentUser;
-            if (user) {
-                document.getElementById('userEmail').textContent = user.email;
+            if (currentUser) {
+                document.getElementById('userEmail').textContent = currentUser.email;
                 document.getElementById('appContent').classList.remove('hidden');
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('registerSection').classList.add('hidden');
                 
-                // الاشتراك في التحديثات في الوقت الحقيقي
-                const userDocRef = db.collection('users').doc(user.uid);
-                const todayDocRef = userDocRef.collection('days').doc(today);
+                // مسار البيانات للمستخدم الحالي واليوم الحالي
+                const userDataPath = `users/${currentUser.uid}/days/${today}`;
                 
                 // تحديث حالة المزامنة
                 updateSyncStatus('syncing', 'جاري المزامنة...');
                 
                 // الاشتراك في التحديثات في الوقت الحقيقي
-                unsubscribe = todayDocRef.onSnapshot((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
+                unsubscribe = db.ref(userDataPath).on('value', (snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
                         for (const key in data.players) {
                             players[key] = data.players[key];
                         }
@@ -556,10 +551,10 @@ db.ref("players").set(players)
                             players: players,
                             matches: matches,
                             date: today,
-                            lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                            lastUpdate: Date.now()
                         };
                         
-                        todayDocRef.set(initialData)
+                        db.ref(userDataPath).set(initialData)
                             .then(() => {
                                 updateSyncStatus('success', 'تم إنشاء بيانات جديدة');
                                 console.log("تم إنشاء بيانات جديدة لهذا اليوم");
@@ -648,23 +643,21 @@ db.ref("players").set(players)
             saveData();
         }
         
-        // حفظ البيانات في Firebase
+        // حفظ البيانات في Firebase Realtime Database
         function saveData() {
-            const user = auth.currentUser;
-            if (user) {
+            if (currentUser) {
                 updateSyncStatus('syncing', 'جاري حفظ البيانات...');
                 
-                const userDocRef = db.collection('users').doc(user.uid);
-                const todayDocRef = userDocRef.collection('days').doc(today);
+                const userDataPath = `users/${currentUser.uid}/days/${today}`;
                 
                 const data = {
                     players: players,
                     matches: matches,
                     date: today,
-                    lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                    lastUpdate: Date.now()
                 };
                 
-                todayDocRef.set(data)
+                db.ref(userDataPath).set(data)
                     .then(() => {
                         updateSyncStatus('success', 'تم حفظ البيانات - ' + new Date().toLocaleTimeString('ar-EG'));
                         console.log("تم حفظ البيانات في Firebase");
@@ -809,10 +802,11 @@ db.ref("players").set(players)
         // الاستماع لتغير حالة authentication
         auth.onAuthStateChanged((user) => {
             if (user) {
+                currentUser = user;
                 loadUserData();
             } else {
                 if (unsubscribe) {
-                    unsubscribe();
+                    db.ref().off('value', unsubscribe);
                 }
                 document.getElementById('appContent').classList.add('hidden');
                 document.getElementById('loginSection').classList.remove('hidden');
@@ -821,5 +815,3 @@ db.ref("players").set(players)
     </script>
 </body>
 </html>
-
-
