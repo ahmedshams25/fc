@@ -1,346 +1,120 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FC Tournament Bracket</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        :root {
-            --bg-dark: #10101d; --bg-light: #1c1c2b; --card-bg: #252538;
-            --primary: #00ff9d; --secondary: #00c6ff; --accent: #ff3b5f;
-            --text-light: #f5f5f5; --text-dark: #222; --gold: #ffd700;
-        }
-        body {
-            font-family: 'Cairo', sans-serif; background-color: var(--bg-dark); color: var(--text-light);
-            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
-        }
-        .container { width: 100%; max-width: 900px; text-align: center; }
-        h1, h2 { font-weight: 900; text-shadow: 0 0 15px rgba(0, 255, 157, 0.3); }
-        h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; }
-        h2 { color: var(--secondary); margin-bottom: 20px; }
+document.addEventListener('DOMContentLoaded', () => {
+    const addCompanyForm = document.getElementById('add-company-form');
+    const companiesList = document.getElementById('companies-list');
+    const addProjectForm = document.getElementById('add-project-form');
+    const projectModal = new bootstrap.Modal(document.getElementById('addProjectModal'));
+    const projectCompanyIdInput = document.getElementById('project-company-id');
 
-        /* Setup Screen */
-        #setup-screen { background: var(--card-bg); padding: 25px; border-radius: 20px; margin-bottom: 30px; }
-        .player-setup-group { margin-bottom: 20px; }
-        .player-name-input { width: 90%; background: var(--bg-light); border: 2px solid #444; border-radius: 10px; padding: 12px; color: var(--text-light); font-size: 1.2rem; margin-bottom: 10px; }
-        .team-inputs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .team-input { width: 100%; box-sizing: border-box; background: #333; border: 1px solid #555; border-radius: 8px; padding: 10px; color: var(--text-light); text-align: center; }
-        .tourney-wins { font-weight: 700; color: var(--gold); margin-left: 10px; }
-        
-        .action-btn {
-            background: linear-gradient(45deg, var(--primary), var(--secondary)); color: var(--text-dark);
-            padding: 15px; font-size: 1.2rem; font-weight: 700; border-radius: 12px;
-            margin-top: 20px; cursor: pointer; border: none; transition: all 0.2s; width: 100%;
-        }
-        .action-btn:hover:not(:disabled) { transform: scale(1.03); }
-        .action-btn:disabled { background: #555; color: #888; cursor: not-allowed; }
-        #reset-all-btn { background: var(--accent); color: white; margin-top: 10px; }
+    let companies = JSON.parse(localStorage.getItem('companies')) || [];
 
-        /* Tournament Screen */
-        #tournament-screen { display: none; width: 100%; overflow-x: auto; }
-        .bracket { display: flex; justify-content: space-between; padding-bottom: 20px; }
-        .round { display: flex; flex-direction: column; justify-content: space-around; width: 200px; min-width: 200px; margin: 0 10px; }
-        .round-title { font-weight: 700; font-size: 1.2rem; color: var(--secondary); margin-bottom: 20px; }
-        .match { background: var(--card-bg); border-radius: 10px; padding: 10px; margin-bottom: 40px; position: relative; border: 1px solid #444;}
-        .team { min-height: 45px; display: flex; flex-direction: column; justify-content: center; padding: 8px; border-radius: 5px; background: #444; margin: 5px 0; font-size: 0.9rem; }
-        .team.winner { background: var(--primary); color: var(--text-dark); font-weight: 700; }
-        .team.loser { opacity: 0.5; }
-        .team-player { font-size: 0.7rem; color: #ccc; }
-        .vs { color: var(--accent); font-weight: 700; }
-        .set-winner-btn {
-            font-size: 0.8rem; padding: 3px 8px; margin-top: 5px; cursor: pointer;
-            border: 1px solid var(--primary); background: transparent; color: var(--primary); border-radius: 5px;
-        }
-        .set-winner-btn:hover { background: var(--primary); color: var(--text-dark); }
-        
-        .champion { text-align: center; }
-        .trophy { font-size: 5rem; color: var(--gold); text-shadow: 0 0 20px var(--gold); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    const saveCompanies = () => {
+        localStorage.setItem('companies', JSON.stringify(companies));
+    };
 
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-        .modal-content { background-color: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; width: 80%; max-width: 400px; border: 1px solid var(--primary); }
-        #winner-selection .modal-btn { background-color: #6c757d; color: white; }
-        #winner-selection .modal-btn.selected { background-color: var(--primary); color: var(--text-dark); }
-        .modal-buttons { margin-top: 25px; display: flex; justify-content: space-around; }
-        .modal-btn { padding: 10px 25px; border-radius: 8px; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; }
-        #confirm-win { background-color: var(--primary); color: var(--text-dark); }
-        #cancel-win { background-color: #6c757d; color: white; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🏆 بطولة FC PRO 🏆</h1>
+    const renderCompanies = () => {
+        companiesList.innerHTML = '';
+        companies.forEach((company, index) => {
+            const companyId = `company-${index}`;
+            const collapseId = `collapse-${index}`;
 
-        <div id="setup-screen">
-            <h2>إعدادات البطولة</h2>
-            <div id="players-list"></div>
-            <button id="start-tournament-btn" class="action-btn">إنشاء جدول البطولة والبدء</button>
-            <button id="reset-all-btn" class="action-btn">مسح كل البيانات والبدء من الصفر</button>
-        </div>
+            const companyElement = document.createElement('div');
+            companyElement.classList.add('accordion-item');
+            companyElement.innerHTML = `
+                <h2 class="accordion-header" id="${companyId}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                        ${company.name}
+                    </button>
+                </h2>
+                <div id="${collapseId}" class="accordion-collapse collapse" data-bs-parent="#companies-list">
+                    <div class="accordion-body">
+                        <button class="btn btn-sm btn-success mb-3" onclick="openAddProjectModal(${index})">
+                            📦 + إضافة مشروع جديد
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger mb-3 float-end" onclick="deleteCompany(${index})">
+                            🗑️ حذف الشركة
+                        </button>
+                        <div id="projects-list-${index}">
+                           <!-- Projects will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            companiesList.appendChild(companyElement);
+            renderProjects(index);
+        });
+    };
 
-        <div id="tournament-screen">
-            <div class="bracket">
-                <div class="round" id="prelim-round"></div>
-                <div class="round" id="quarter-finals"></div>
-                <div class="round" id="semi-finals"></div>
-                <div class="round" id="final"></div>
-                <div class="round" id="champion-round"></div>
-            </div>
-             <button id="back-to-setup-btn" class="action-btn" style="background: #6c757d;">العودة للإعدادات (إلغاء البطولة)</button>
-        </div>
-    </div>
+    const renderProjects = (companyIndex) => {
+        const projectsListContainer = document.getElementById(`projects-list-${companyIndex}`);
+        const company = companies[companyIndex];
+        projectsListContainer.innerHTML = '';
 
-    <div id="confirmation-modal" class="modal">
-        <div class="modal-content">
-            <h3 id="modal-title">تأكيد الفائز</h3>
-            <p id="confirmation-message">من فاز بالمباراة؟</p>
-            <div id="winner-selection"></div>
-            <div class="modal-buttons">
-                <button id="confirm-win" class="modal-btn">تأكيد</button>
-                <button id="cancel-win" class="modal-btn">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        let state = {
-            players: {
-                p1: { name: 'اللاعب 1', teams: ['', '', ''], tourneyWins: 0 },
-                p2: { name: 'اللاعب 2', teams: ['', '', ''], tourneyWins: 0 },
-                p3: { name: 'اللاعب 3', teams: ['', '', ''], tourneyWins: 0 },
-            },
-            tournament: null,
-        };
-
-        const setupScreen = document.getElementById('setup-screen');
-        const tournamentScreen = document.getElementById('tournament-screen');
-        const modal = document.getElementById('confirmation-modal');
-        let matchIdToConfirm = null;
-        let selectedWinner = null;
-
-        function saveState() {
-            localStorage.setItem('fcTournamentState', JSON.stringify(state));
-        }
-
-        function loadState() {
-            const saved = localStorage.getItem('fcTournamentState');
-            if (saved) {
-                state = JSON.parse(saved);
-            }
-        }
-        
-        function renderSetupScreen() {
-            setupScreen.style.display = 'block';
-            tournamentScreen.style.display = 'none';
-            const playersList = document.getElementById('players-list');
-            playersList.innerHTML = '';
-            for (const pKey in state.players) {
-                const pData = state.players[pKey];
-                const playerDiv = document.createElement('div');
-                playerDiv.className = 'player-setup-group';
-                playerDiv.innerHTML = `
-                    <label>
-                        <input type="text" class="player-name-input" data-pkey="${pKey}" value="${pData.name}">
-                        <span class="tourney-wins">🏆 ${pData.tourneyWins}</span>
-                    </label>
-                    <div class="team-inputs">
-                        <input type="text" class="team-input" data-pkey="${pKey}" data-tindex="0" placeholder="الفريق 1" value="${pData.teams[0] || ''}">
-                        <input type="text" class="team-input" data-pkey="${pKey}" data-tindex="1" placeholder="الفريق 2" value="${pData.teams[1] || ''}">
-                        <input type="text" class="team-input" data-pkey="${pKey}" data-tindex="2" placeholder="الفريق 3" value="${pData.teams[2] || ''}">
+        if (company.projects && company.projects.length > 0) {
+            company.projects.forEach((project, projectIndex) => {
+                const projectElement = document.createElement('div');
+                projectElement.classList.add('card', 'mb-2', 'project-card');
+                projectElement.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">${project.name}</h5>
+                        <p class="card-text mb-1"><strong>التكلفة:</strong> ${project.cost || 'غير محدد'}</p>
+                        <p class="card-text mb-2"><strong>الموعد النهائي:</strong> ${project.deadline}</p>
+                        <a href="${project.link}" target="_blank" class="btn btn-sm btn-outline-primary ${!project.link ? 'disabled' : ''}">🔗 زيارة الرابط</a>
+                        <button class="btn btn-sm btn-outline-danger float-end" onclick="deleteProject(${companyIndex}, ${projectIndex})">حذف المشروع</button>
                     </div>
                 `;
-                playersList.appendChild(playerDiv);
-            }
+                projectsListContainer.appendChild(projectElement);
+            });
+        } else {
+            projectsListContainer.innerHTML = '<p class="text-muted">لا توجد مشاريع مضافة لهذه الشركة بعد.</p>';
         }
-
-        function renderTournamentScreen() {
-            setupScreen.style.display = 'none';
-            tournamentScreen.style.display = 'block';
-
-            // Clear previous bracket
-            const rounds = ['prelim-round', 'quarter-finals', 'semi-finals', 'final', 'champion-round'];
-            const roundTitles = {'prelim-round': 'الدور التمهيدي', 'quarter-finals': 'ربع النهائي', 'semi-finals': 'نصف النهائي', 'final': 'النهائي', 'champion-round': 'البطل'};
-            rounds.forEach(r => document.getElementById(r).innerHTML = `<div class="round-title">${roundTitles[r]}</div>`);
-
-            if (!state.tournament) return;
-
-            for (const matchId in state.tournament.matches) {
-                const match = state.tournament.matches[matchId];
-                const matchDiv = document.createElement('div');
-                matchDiv.className = 'match';
-                matchDiv.id = matchId;
-
-                const team1HTML = renderTeam(match.team1, match.winner);
-                const team2HTML = renderTeam(match.team2, match.winner);
-
-                let buttonHTML = '';
-                if (match.team1 && match.team2 && !match.winner) {
-                    buttonHTML = `<button class="set-winner-btn" data-match-id="${matchId}">تحديد الفائز</button>`;
-                }
-
-                matchDiv.innerHTML = `${team1HTML}<div class="vs">VS</div>${team2HTML}${buttonHTML}`;
-                document.getElementById(match.round).appendChild(matchDiv);
-            }
-            
-            if(state.tournament.champion){
-                const champDiv = document.createElement('div');
-                champDiv.className = 'champion';
-                champDiv.innerHTML = `
-                    <div class="trophy">🏆</div>
-                    <h3>${state.tournament.champion.name}</h3>
-                    <div class="team-player">${state.players[state.tournament.champion.playerKey].name}</div>
-                `;
-                document.getElementById('champion-round').appendChild(champDiv);
-            }
+    };
+    
+    window.openAddProjectModal = (companyIndex) => {
+        projectCompanyIdInput.value = companyIndex;
+        addProjectForm.reset();
+        projectModal.show();
+    };
+    
+    window.deleteCompany = (companyIndex) => {
+        if (confirm('هل أنت متأكد من رغبتك في حذف هذه الشركة وكل مشاريعها؟')) {
+            companies.splice(companyIndex, 1);
+            saveCompanies();
+            renderCompanies();
         }
-        
-        function renderTeam(team, winner) {
-            if (!team) return '<div class="team"></div>';
-            let classes = 'team';
-            if (winner) {
-                classes += (winner.name === team.name) ? ' winner' : ' loser';
-            }
-            return `<div class="${classes}">${team.name}<br><span class="team-player">${state.players[team.playerKey].name}</span></div>`;
+    };
+    
+    window.deleteProject = (companyIndex, projectIndex) => {
+         if (confirm('هل أنت متأكد من رغبتك في حذف هذا المشروع؟')) {
+            companies[companyIndex].projects.splice(projectIndex, 1);
+            saveCompanies();
+            renderProjects(companyIndex);
         }
-        
-        function updateUI() {
-            if (state.tournament) {
-                renderTournamentScreen();
-            } else {
-                renderSetupScreen();
-            }
-        }
+    };
 
-        function startTournament() {
-            let allTeams = [];
-            for (const pKey in state.players) {
-                state.players[pKey].teams.forEach(teamName => {
-                    if (teamName && teamName.trim() !== '') {
-                        allTeams.push({ name: teamName.trim(), playerKey: pKey });
-                    }
-                });
-            }
-            if(allTeams.length !== 9) {
-                alert('الرجاء إدخال أسماء جميع الفرق التسعة بشكل صحيح لبدء البطولة.');
-                return;
-            }
-            allTeams.sort(() => Math.random() - 0.5);
-
-            state.tournament = {
-                champion: null,
-                matches: {
-                    prelim1: { round: 'prelim-round', team1: allTeams[0], team2: allTeams[1], winner: null, feeds: 'qf4' },
-                    qf1: { round: 'quarter-finals', team1: allTeams[2], team2: allTeams[3], winner: null, feeds: 'sf1' },
-                    qf2: { round: 'quarter-finals', team1: allTeams[4], team2: allTeams[5], winner: null, feeds: 'sf1' },
-                    qf3: { round: 'quarter-finals', team1: allTeams[6], team2: allTeams[7], winner: null, feeds: 'sf2' },
-                    qf4: { round: 'quarter-finals', team1: allTeams[8], team2: null, winner: null, feeds: 'sf2' },
-                    sf1: { round: 'semi-finals', team1: null, team2: null, winner: null, feeds: 'f1'},
-                    sf2: { round: 'semi-finals', team1: null, team2: null, winner: null, feeds: 'f1'},
-                    f1: { round: 'final', team1: null, team2: null, winner: null, feeds: 'champion'},
-                }
-            };
-            saveState();
-            updateUI();
-        }
-
-        function setWinner(matchId, winnerTeam) {
-            const match = state.tournament.matches[matchId];
-            if (!match) return;
-            match.winner = winnerTeam;
-            
-            const nextMatchId = match.feeds;
-            if(nextMatchId === 'champion') {
-                state.tournament.champion = winnerTeam;
-                state.players[winnerTeam.playerKey].tourneyWins++;
-            } else if (nextMatchId) {
-                const nextMatch = state.tournament.matches[nextMatchId];
-                if (!nextMatch.team1) nextMatch.team1 = winnerTeam;
-                else if (!nextMatch.team2) nextMatch.team2 = winnerTeam;
-            }
-            saveState();
-            updateUI();
-        }
-        
-        // --- Event Listeners ---
-        document.getElementById('start-tournament-btn').addEventListener('click', startTournament);
-        
-        document.getElementById('reset-all-btn').addEventListener('click', () => {
-             if(confirm('هل أنت متأكد؟ سيتم حذف كل البيانات بما في ذلك سجل انتصارات البطولات.')){
-                localStorage.removeItem('fcTournamentState');
-                state = {
-                    players: { p1: { name: 'اللاعب 1', teams: ['', '', ''], tourneyWins: 0 }, p2: { name: 'اللاعب 2', teams: ['', '', ''], tourneyWins: 0 }, p3: { name: 'اللاعب 3', teams: ['', '', ''], tourneyWins: 0 },},
-                    tournament: null,
-                };
-                updateUI();
-            }
-        });
-
-        document.getElementById('back-to-setup-btn').addEventListener('click', () => {
-            if(confirm('هل أنت متأكد؟ سيتم إلغاء البطولة الحالية والعودة لشاشة الإعداد.')){
-                state.tournament = null;
-                saveState();
-                updateUI();
-            }
-        });
-
-        document.addEventListener('input', (e) => {
-            if (e.target.matches('.player-name-input')) {
-                state.players[e.target.dataset.pkey].name = e.target.value;
-                saveState();
-            }
-            if (e.target.matches('.team-input')) {
-                state.players[e.target.dataset.pkey].teams[e.target.dataset.tindex] = e.target.value;
-                saveState();
-            }
-        });
-        
-        document.addEventListener('click', (e) => {
-            if(e.target.matches('.set-winner-btn')){
-                matchIdToConfirm = e.target.dataset.matchId;
-                const matchData = state.tournament.matches[matchIdToConfirm];
-                const winnerSelectionDiv = document.getElementById('winner-selection');
-                winnerSelectionDiv.innerHTML = `
-                    <button class="modal-btn winner-option" data-team-name='${JSON.stringify(matchData.team1)}'>${matchData.team1.name}</button>
-                    <button class="modal-btn winner-option" data-team-name='${JSON.stringify(matchData.team2)}'>${matchData.team2.name}</button>
-                `;
-                document.getElementById('modal-title').textContent = `تأكيد نتيجة ${matchData.team1.name} ضد ${matchData.team2.name}`;
-                modal.style.display = 'flex';
-            }
-        });
-        
-        document.getElementById('winner-selection').addEventListener('click', (e) => {
-            const target = e.target.closest('.winner-option');
-            if(target){
-                selectedWinner = JSON.parse(target.dataset.teamName);
-                document.querySelectorAll('.winner-option').forEach(btn => btn.classList.remove('selected'));
-                target.classList.add('selected');
-            }
-        });
-
-        document.getElementById('confirm-win').addEventListener('click', () => {
-            if(selectedWinner && matchIdToConfirm) {
-                setWinner(matchIdToConfirm, selectedWinner);
-                modal.style.display = 'none';
-                matchIdToConfirm = null;
-                selectedWinner = null;
-            } else {
-                alert('الرجاء اختيار الفريق الفائز أولاً.');
-            }
-        });
-
-        document.getElementById('cancel-win').addEventListener('click', () => {
-            modal.style.display = 'none';
-            matchIdToConfirm = null;
-            selectedWinner = null;
-        });
-
-        // Initial Load
-        loadState();
-        updateUI();
+    addCompanyForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const companyName = document.getElementById('company-name').value;
+        companies.push({ name: companyName, projects: [] });
+        saveCompanies();
+        renderCompanies();
+        addCompanyForm.reset();
     });
-    </script>
-</body>
-</html>
+
+    addProjectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const companyIndex = projectCompanyIdInput.value;
+        const newProject = {
+            name: document.getElementById('project-name').value,
+            deadline: document.getElementById('project-deadline').value,
+            cost: document.getElementById('project-cost').value,
+            link: document.getElementById('project-link').value
+        };
+
+        companies[companyIndex].projects.push(newProject);
+        saveCompanies();
+        renderProjects(companyIndex);
+        projectModal.hide();
+    });
+
+    renderCompanies();
+});
