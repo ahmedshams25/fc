@@ -1,108 +1,96 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Elements Selection ---
     const addCompanyForm = document.getElementById('add-company-form');
+    const companyNameInput = document.getElementById('company-name');
     const companiesList = document.getElementById('companies-list');
     const addProjectForm = document.getElementById('add-project-form');
-    const projectModal = new bootstrap.Modal(document.getElementById('addProjectModal'));
     const projectCompanyIdInput = document.getElementById('project-company-id');
+    const projectModalEl = document.getElementById('addProjectModal');
+    const projectModal = new bootstrap.Modal(projectModalEl);
 
+    // --- Data Management ---
+    // Load companies from localStorage or initialize an empty array
     let companies = JSON.parse(localStorage.getItem('companies')) || [];
 
+    // Function to save the current state of companies to localStorage
     const saveCompanies = () => {
         localStorage.setItem('companies', JSON.stringify(companies));
     };
 
-    const renderCompanies = () => {
-        companiesList.innerHTML = '';
-        companies.forEach((company, index) => {
-            const companyId = `company-${index}`;
-            const collapseId = `collapse-${index}`;
+    // --- Rendering Functions ---
+    const renderProjects = (companyIndex) => {
+        const company = companies[companyIndex];
+        if (!company || !company.projects) return ''; // Return empty string if no projects
 
-            const companyElement = document.createElement('div');
-            companyElement.classList.add('accordion-item');
-            companyElement.innerHTML = `
-                <h2 class="accordion-header" id="${companyId}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+        if (company.projects.length === 0) {
+            return '<p class="text-muted small mt-3">لا توجد مشاريع مضافة لهذه الشركة بعد.</p>';
+        }
+
+        return company.projects.map((project, projectIndex) => `
+            <div class="card mb-2 project-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title mb-1">${project.name}</h5>
+                        <button class="btn btn-sm btn-outline-danger btn-delete-project" data-company-index="${companyIndex}" data-project-index="${projectIndex}">حذف</button>
+                    </div>
+                    <p class="card-text mb-1"><small><strong>التكلفة:</strong> ${project.cost || 'غير محدد'}</small></p>
+                    <p class="card-text mb-2"><small><strong>الموعد النهائي:</strong> ${project.deadline}</small></p>
+                    <a href="${project.link}" target="_blank" class="btn btn-sm btn-outline-primary ${!project.link ? 'disabled' : ''}">🔗 زيارة الرابط</a>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    const renderCompanies = () => {
+        companiesList.innerHTML = ''; // Clear the list before rendering
+        if (companies.length === 0) {
+            companiesList.innerHTML = '<div class="alert alert-info">لم تقم بإضافة أي شركات بعد. ابدأ بإضافة شركة جديدة من النموذج.</div>';
+            return;
+        }
+
+        companiesList.innerHTML = companies.map((company, index) => `
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${index}">
                         ${company.name}
                     </button>
                 </h2>
-                <div id="${collapseId}" class="accordion-collapse collapse" data-bs-parent="#companies-list">
+                <div id="collapse-${index}" class="accordion-collapse collapse" data-bs-parent="#companies-list">
                     <div class="accordion-body">
-                        <button class="btn btn-sm btn-success mb-3" onclick="openAddProjectModal(${index})">
-                            📦 + إضافة مشروع جديد
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger mb-3 float-end" onclick="deleteCompany(${index})">
-                            🗑️ حذف الشركة
-                        </button>
-                        <div id="projects-list-${index}">
-                           <!-- Projects will be rendered here -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                             <button class="btn btn-sm btn-success btn-add-project" data-company-index="${index}">
+                                📦 + إضافة مشروع جديد
+                            </button>
+                            <button class="btn btn-sm btn-danger btn-delete-company" data-company-index="${index}">
+                                🗑️ حذف الشركة
+                            </button>
                         </div>
+                        <div class="projects-list">${renderProjects(index)}</div>
                     </div>
                 </div>
-            `;
-            companiesList.appendChild(companyElement);
-            renderProjects(index);
-        });
+            </div>
+        `).join('');
     };
 
-    const renderProjects = (companyIndex) => {
-        const projectsListContainer = document.getElementById(`projects-list-${companyIndex}`);
-        const company = companies[companyIndex];
-        projectsListContainer.innerHTML = '';
-
-        if (company.projects && company.projects.length > 0) {
-            company.projects.forEach((project, projectIndex) => {
-                const projectElement = document.createElement('div');
-                projectElement.classList.add('card', 'mb-2', 'project-card');
-                projectElement.innerHTML = `
-                    <div class="card-body">
-                        <h5 class="card-title">${project.name}</h5>
-                        <p class="card-text mb-1"><strong>التكلفة:</strong> ${project.cost || 'غير محدد'}</p>
-                        <p class="card-text mb-2"><strong>الموعد النهائي:</strong> ${project.deadline}</p>
-                        <a href="${project.link}" target="_blank" class="btn btn-sm btn-outline-primary ${!project.link ? 'disabled' : ''}">🔗 زيارة الرابط</a>
-                        <button class="btn btn-sm btn-outline-danger float-end" onclick="deleteProject(${companyIndex}, ${projectIndex})">حذف المشروع</button>
-                    </div>
-                `;
-                projectsListContainer.appendChild(projectElement);
-            });
-        } else {
-            projectsListContainer.innerHTML = '<p class="text-muted">لا توجد مشاريع مضافة لهذه الشركة بعد.</p>';
-        }
-    };
-    
-    window.openAddProjectModal = (companyIndex) => {
-        projectCompanyIdInput.value = companyIndex;
-        addProjectForm.reset();
-        projectModal.show();
-    };
-    
-    window.deleteCompany = (companyIndex) => {
-        if (confirm('هل أنت متأكد من رغبتك في حذف هذه الشركة وكل مشاريعها؟')) {
-            companies.splice(companyIndex, 1);
-            saveCompanies();
-            renderCompanies();
-        }
-    };
-    
-    window.deleteProject = (companyIndex, projectIndex) => {
-         if (confirm('هل أنت متأكد من رغبتك في حذف هذا المشروع؟')) {
-            companies[companyIndex].projects.splice(projectIndex, 1);
-            saveCompanies();
-            renderProjects(companyIndex);
-        }
-    };
-
+    // --- Event Handlers ---
+    // Handle adding a new company
     addCompanyForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const companyName = document.getElementById('company-name').value;
-        companies.push({ name: companyName, projects: [] });
-        saveCompanies();
-        renderCompanies();
-        addCompanyForm.reset();
+        const companyName = companyNameInput.value.trim();
+        if (companyName) {
+            companies.push({ name: companyName, projects: [] });
+            saveCompanies();
+            renderCompanies();
+            addCompanyForm.reset();
+        }
     });
 
+    // Handle adding a new project
     addProjectForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const companyIndex = projectCompanyIdInput.value;
+        if (companyIndex === '') return;
+
         const newProject = {
             name: document.getElementById('project-name').value,
             deadline: document.getElementById('project-deadline').value,
@@ -112,9 +100,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
         companies[companyIndex].projects.push(newProject);
         saveCompanies();
-        renderProjects(companyIndex);
+        renderCompanies(); // Re-render everything to update the correct project list
         projectModal.hide();
     });
+    
+    // Using Event Delegation for dynamically created buttons
+    companiesList.addEventListener('click', (e) => {
+        const target = e.target;
+        const companyIndex = target.dataset.companyIndex;
 
+        // Click on "Add Project" button
+        if (target.classList.contains('btn-add-project')) {
+            projectCompanyIdInput.value = companyIndex;
+            addProjectForm.reset();
+            projectModal.show();
+        }
+
+        // Click on "Delete Company" button
+        if (target.classList.contains('btn-delete-company')) {
+             if (confirm('هل أنت متأكد من رغبتك في حذف هذه الشركة وكل مشاريعها؟')) {
+                companies.splice(companyIndex, 1);
+                saveCompanies();
+                renderCompanies();
+            }
+        }
+        
+        // Click on "Delete Project" button
+        if (target.classList.contains('btn-delete-project')) {
+            const projectIndex = target.dataset.projectIndex;
+             if (confirm('هل أنت متأكد من رغبتك في حذف هذا المشروع؟')) {
+                companies[companyIndex].projects.splice(projectIndex, 1);
+                saveCompanies();
+                renderCompanies();
+            }
+        }
+    });
+
+
+    // --- Initial Render ---
     renderCompanies();
 });
