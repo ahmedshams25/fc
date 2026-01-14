@@ -3,227 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FC Pro Tracker</title>
+    <title>FC Tournament Bracket</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-
         :root {
-            --bg-dark: #10101d;
-            --bg-light: #1c1c2b;
-            --card-bg: #252538;
-            --primary: #00ff9d;
-            --secondary: #00c6ff;
-            --accent: #ff3b5f;
-            --text-light: #f5f5f5;
-            --text-dark: #222;
+            --bg-dark: #10101d; --bg-light: #1c1c2b; --card-bg: #252538;
+            --primary: #00ff9d; --secondary: #00c6ff; --accent: #ff3b5f;
+            --text-light: #f5f5f5; --text-dark: #222; --gold: #ffd700;
         }
-
         body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--bg-light);
-            background-image: linear-gradient(145deg, var(--bg-dark) 0%, var(--bg-light) 100%);
-            color: var(--text-light);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Cairo', sans-serif; background-color: var(--bg-dark); color: var(--text-light);
+            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
         }
+        .container { width: 100%; max-width: 900px; text-align: center; }
+        h1, h2 { font-weight: 900; text-shadow: 0 0 15px rgba(0, 255, 157, 0.3); }
+        h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; }
+        h2 { color: var(--secondary); margin-bottom: 20px; }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-        }
-
-        h1, h2 {
-            font-weight: 900;
-            text-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
-        }
-
-        h1 {
-            font-size: 2.8rem;
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            color: var(--secondary);
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        /* Player Setup Section */
-        #player-setup {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-        }
-
-        .player-inputs {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        .player-input-group {
-            position: relative;
-        }
-
-        .player-name-input {
-            width: 100%;
-            background: var(--bg-light);
-            border: 2px solid #444;
-            border-radius: 10px;
-            padding: 12px;
-            color: var(--text-light);
-            font-size: 1rem;
-            text-align: center;
-        }
-        .player-name-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .total-wins {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-         .crown {
-            color: #ffd700;
-            text-shadow: 0 0 5px #ffc400;
-        }
-
-        /* Match Selection Screen */
-        #match-selection {
-            margin-bottom: 30px;
-        }
-
-        .player-selection-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-        }
-
-        .player-select-card {
-            background: var(--card-bg);
-            padding: 20px 15px;
-            border-radius: 15px;
-            border: 2px solid #444;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .player-select-card.selected {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 255, 157, 0.2);
-        }
-
-        #start-match-btn {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: var(--text-dark);
-            width: 100%;
-            padding: 15px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            border-radius: 12px;
-            margin-top: 25px;
-            cursor: pointer;
-            border: none;
-            transition: transform 0.2s;
-        }
-        #start-match-btn:disabled {
-            background: #555;
-            color: #888;
-            cursor: not-allowed;
-        }
-        #start-match-btn:not(:disabled):hover {
-            transform: scale(1.03);
-        }
-
-        /* Match Screen */
-        #match-screen {
-            display: none; /* Initially hidden */
-            width: 100%;
-        }
-
-        #h2h-stats {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 20px;
-            height: 25px;
-        }
-
-        .scoreboard {
-            display: flex;
-            justify-content: space-around;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .player-card {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            width: 45%;
-            border: 2px solid #444;
-        }
+        /* Setup Screen */
+        #setup-screen { background: var(--card-bg); padding: 25px; border-radius: 20px; margin-bottom: 30px; }
+        .player-setup-group { margin-bottom: 20px; }
+        .player-name-input { width: 90%; background: var(--bg-light); border: 2px solid #444; border-radius: 10px; padding: 12px; color: var(--text-light); font-size: 1.2rem; margin-bottom: 10px; }
+        .team-inputs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .team-input { width: 100%; background: #333; border: 1px solid #555; border-radius: 8px; padding: 10px; color: var(--text-light); text-align: center; }
+        .tourney-wins { font-weight: 700; color: var(--gold); margin-left: 10px; }
         
-        .player-card-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 15px; }
-        .score { font-size: 4rem; font-weight: 900; margin-bottom: 20px; }
-        
-        .add-win-btn {
-            background: var(--primary);
-            color: var(--text-dark);
-            width: 100%;
-            padding: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            border-radius: 10px;
-            cursor: pointer;
-            border: none;
+        #start-tournament-btn, #reset-all-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary)); color: var(--text-dark);
+            padding: 15px; font-size: 1.2rem; font-weight: 700; border-radius: 12px;
+            margin-top: 20px; cursor: pointer; border: none; transition: transform 0.2s; width: 100%;
         }
+        #reset-all-btn { background: var(--accent); color: white; margin-top: 10px; }
 
-        #end-match-btn {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-size: 1rem;
-            cursor: pointer;
+        /* Tournament Screen */
+        #tournament-screen { display: none; width: 100%; overflow-x: auto; }
+        .bracket { display: flex; justify-content: space-between; }
+        .round { display: flex; flex-direction: column; justify-content: space-around; width: 200px; }
+        .round-title { font-weight: 700; font-size: 1.2rem; color: var(--secondary); margin-bottom: 20px; }
+        .match { background: var(--card-bg); border-radius: 10px; padding: 10px; margin-bottom: 20px; position: relative; }
+        .team { padding: 8px; border-radius: 5px; background: #444; margin: 5px 0; font-size: 0.9rem; }
+        .team.winner { background: var(--primary); color: var(--text-dark); font-weight: 700; }
+        .team.loser { opacity: 0.5; }
+        .team-player { font-size: 0.7rem; color: #ccc; }
+        .vs { color: var(--accent); font-weight: 700; }
+        .set-winner-btn {
+            font-size: 0.8rem; padding: 3px 8px; margin-top: 5px; cursor: pointer;
+            border: 1px solid var(--primary); background: transparent; color: var(--primary); border-radius: 5px;
         }
-
-        /* Match History */
-        #history-log {
-            margin-top: 40px;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-        }
-        #history-log ul { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
-        #history-log li {
-            background: var(--bg-light);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-        }
-        #history-log li .date { font-size: 0.8rem; color: #aaa; }
+        .champion { text-align: center; }
+        .trophy { font-size: 5rem; color: var(--gold); text-shadow: 0 0 20px var(--gold); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
         /* Modal */
+        .modal { display: none; /* ... same as before ... */ }
+        /* Add other modal styles from previous example */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-content { background-color: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; width: 80%; max-width: 400px; border: 1px solid var(--primary); }
         .modal-buttons { margin-top: 25px; display: flex; justify-content: space-around; }
@@ -233,295 +66,299 @@
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>سِجِل الأبطال PRO</h1>
+        <h1>🏆 بطولة FC PRO 🏆</h1>
 
-        <!-- Player Setup -->
-        <div id="player-setup">
-            <h2>إعدادات اللاعبين</h2>
-            <div class="player-inputs">
-                <div class="player-input-group">
-                    <span class="total-wins" id="p1_wins_display">👑 0</span>
-                    <input type="text" id="p1_name" class="player-name-input" data-player="p1" value="اللاعب 1">
-                </div>
-                <div class="player-input-group">
-                    <span class="total-wins" id="p2_wins_display">0</span>
-                    <input type="text" id="p2_name" class="player-name-input" data-player="p2" value="اللاعب 2">
-                </div>
-                <div class="player-input-group">
-                    <span class="total-wins" id="p3_wins_display">0</span>
-                    <input type="text" id="p3_name" class="player-name-input" data-player="p3" value="اللاعب 3">
-                </div>
-            </div>
+        <!-- Setup Screen -->
+        <div id="setup-screen">
+            <h2>إعدادات البطولة</h2>
+            <div id="players-list"></div>
+            <button id="start-tournament-btn">إنشاء جدول البطولة والبدء</button>
+            <button id="reset-all-btn">مسح كل البيانات والبدء من الصفر</button>
         </div>
 
-        <!-- Screens will be swapped here -->
-        <div id="main-content">
-            <!-- Match Selection -->
-            <div id="match-selection">
-                <h2>اختر المتنافسين</h2>
-                <div class="player-selection-grid">
-                    <div class="player-select-card" data-player="p1" id="p1_select_card">اللاعب 1</div>
-                    <div class="player-select-card" data-player="p2" id="p2_select_card">اللاعب 2</div>
-                    <div class="player-select-card" data-player="p3" id="p3_select_card">اللاعب 3</div>
+        <!-- Tournament Screen -->
+        <div id="tournament-screen">
+            <div class="bracket">
+                <div class="round" id="prelim-round">
+                    <div class="round-title">الدور التمهيدي</div>
                 </div>
-                <button id="start-match-btn" disabled>بدء المباراة</button>
-            </div>
-
-            <!-- Match Screen -->
-            <div id="match-screen">
-                <h2 id="h2h-stats"></h2>
-                <div class="scoreboard">
-                    <div class="player-card" id="match_p1_card">
-                        <div class="player-card-name" id="match_p1_name"></div>
-                        <div class="score" id="match_p1_score">0</div>
-                        <button class="add-win-btn" id="match_p1_win_btn">أضف فوز</button>
-                    </div>
-                    <div class="player-card" id="match_p2_card">
-                        <div class="player-card-name" id="match_p2_name"></div>
-                        <div class="score" id="match_p2_score">0</div>
-                        <button class="add-win-btn" id="match_p2_win_btn">أضف فوز</button>
-                    </div>
+                <div class="round" id="quarter-finals">
+                    <div class="round-title">ربع النهائي</div>
                 </div>
-                <button id="end-match-btn">إنهاء المباراة والعودة</button>
+                <div class="round" id="semi-finals">
+                    <div class="round-title">نصف النهائي</div>
+                </div>
+                <div class="round" id="final">
+                    <div class="round-title">النهائي</div>
+                </div>
+                <div class="round" id="champion-round">
+                    <div class="round-title">البطل</div>
+                </div>
             </div>
-        </div>
-        
-        <!-- Match History -->
-        <div id="history-log">
-            <h2><span class="crown">📜</span> سجل المباريات</h2>
-            <ul id="history-list">
-                <!-- History items will be injected here -->
-            </ul>
+             <button id="back-to-setup-btn" style="background: #6c757d; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; margin-top: 30px;">العودة للإعدادات</button>
         </div>
     </div>
 
     <!-- Confirmation Modal -->
     <div id="confirmation-modal" class="modal">
         <div class="modal-content">
+            <h3 id="modal-title">تأكيد الفائز</h3>
             <p id="confirmation-message"></p>
+            <div id="winner-selection"></div>
             <div class="modal-buttons">
-                <button id="confirm-win" class="modal-btn">تأكيد الفوز</button>
+                <button id="confirm-win" class="modal-btn">تأكيد</button>
                 <button id="cancel-win" class="modal-btn">إلغاء</button>
             </div>
         </div>
     </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // State
-            let state = {
-                players: {
-                    p1: { name: 'اللاعب 1', wins: 0 },
-                    p2: { name: 'اللاعب 2', wins: 0 },
-                    p3: { name: 'اللاعب 3', wins: 0 },
-                },
-                matchHistory: [],
-                selectedPlayers: [],
-                currentMatch: {
-                    p1: null, p2: null, p1_score: 0, p2_score: 0
+    document.addEventListener('DOMContentLoaded', () => {
+        let state = {
+            players: {
+                p1: { name: 'اللاعب 1', teams: ['', '', ''], tourneyWins: 0 },
+                p2: { name: 'اللاعب 2', teams: ['', '', ''], tourneyWins: 0 },
+                p3: { name: 'اللاعب 3', teams: ['', '', ''], tourneyWins: 0 },
+            },
+            tournament: null, // Will hold bracket info
+        };
+
+        const setupScreen = document.getElementById('setup-screen');
+        const tournamentScreen = document.getElementById('tournament-screen');
+        let matchToConfirm = null;
+        let selectedWinner = null;
+
+        function saveState() {
+            localStorage.setItem('fcTournamentState', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('fcTournamentState');
+            if (saved) {
+                state = JSON.parse(saved);
+            }
+        }
+        
+        function renderSetupScreen() {
+            setupScreen.style.display = 'block';
+            tournamentScreen.style.display = 'none';
+            const playersList = document.getElementById('players-list');
+            playersList.innerHTML = '';
+            for (const pKey in state.players) {
+                const pData = state.players[pKey];
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player-setup-group';
+                playerDiv.innerHTML = `
+                    <label>
+                        <input type="text" class="player-name-input" data-pkey="${pKey}" value="${pData.name}">
+                        <span class="tourney-wins">🏆 ${pData.tourneyWins}</span>
+                    </label>
+                    <div class="team-inputs">
+                        <input type="text" class="team-input" data-pkey="${pKey}" data-tindex="0" placeholder="الفريق 1" value="${pData.teams[0]}">
+                        <input type="text" class="team-input" data-pkey="${pKey}" data-tindex="1" placeholder="الفريق 2" value="${pData.teams[1]}">
+                        <input type="text" class="team-input" data-pkey="${pKey}" data-tindex="2" placeholder="الفريق 3" value="${pData.teams[2]}">
+                    </div>
+                `;
+                playersList.appendChild(playerDiv);
+            }
+        }
+
+        function renderTournamentScreen() {
+            setupScreen.style.display = 'none';
+            tournamentScreen.style.display = 'block';
+
+            // Clear previous bracket
+            document.getElementById('prelim-round').innerHTML = '<div class="round-title">الدور التمهيدي</div>';
+            document.getElementById('quarter-finals').innerHTML = '<div class="round-title">ربع النهائي</div>';
+            document.getElementById('semi-finals').innerHTML = '<div class="round-title">نصف النهائي</div>';
+            document.getElementById('final').innerHTML = '<div class="round-title">النهائي</div>';
+            document.getElementById('champion-round').innerHTML = '<div class="round-title">البطل</div>';
+
+            for (const matchId in state.tournament.matches) {
+                const match = state.tournament.matches[matchId];
+                const matchDiv = document.createElement('div');
+                matchDiv.className = 'match';
+                matchDiv.id = matchId;
+
+                const team1HTML = renderTeam(match.team1, match.winner);
+                const team2HTML = renderTeam(match.team2, match.winner);
+
+                let buttonHTML = '';
+                if (match.team1 && match.team2 && !match.winner) {
+                    buttonHTML = `<button class="set-winner-btn" data-match-id="${matchId}">تحديد الفائز</button>`;
+                }
+
+                matchDiv.innerHTML = `${team1HTML}<div class="vs">VS</div>${team2HTML}${buttonHTML}`;
+                document.getElementById(match.round).appendChild(matchDiv);
+            }
+            
+            // Render Champion
+            if(state.tournament.champion){
+                const champDiv = document.createElement('div');
+                champDiv.className = 'champion';
+                champDiv.innerHTML = `
+                    <div class="trophy">🏆</div>
+                    <h3>${state.tournament.champion.name}</h3>
+                    <div class="team-player">${state.players[state.tournament.champion.playerKey].name}</div>
+                `;
+                document.getElementById('champion-round').appendChild(champDiv);
+            }
+        }
+        
+        function renderTeam(team, winner) {
+            if (!team) return '<div class="team"></div>';
+            let classes = 'team';
+            if (winner) {
+                classes += (winner.name === team.name) ? ' winner' : ' loser';
+            }
+            return `<div class="${classes}">${team.name}<br><span class="team-player">${state.players[team.playerKey].name}</span></div>`;
+        }
+        
+        function updateUI() {
+            if (state.tournament) {
+                renderTournamentScreen();
+            } else {
+                renderSetupScreen();
+            }
+        }
+
+        function startTournament() {
+            // Flatten and shuffle all 9 teams
+            let allTeams = [];
+            for (const pKey in state.players) {
+                state.players[pKey].teams.forEach(teamName => {
+                    if (teamName.trim() === '') return;
+                    allTeams.push({ name: teamName, playerKey: pKey });
+                });
+            }
+            if(allTeams.length !== 9) {
+                alert('الرجاء إدخال أسماء جميع الفرق التسعة.');
+                return;
+            }
+            allTeams.sort(() => Math.random() - 0.5); // Shuffle
+
+            state.tournament = {
+                champion: null,
+                matches: {
+                    prelim1: { round: 'prelim-round', team1: allTeams[0], team2: allTeams[1], winner: null, feeds: 'qf4' },
+                    qf1: { round: 'quarter-finals', team1: allTeams[2], team2: allTeams[3], winner: null, feeds: 'sf1' },
+                    qf2: { round: 'quarter-finals', team1: allTeams[4], team2: allTeams[5], winner: null, feeds: 'sf1' },
+                    qf3: { round: 'quarter-finals', team1: allTeams[6], team2: allTeams[7], winner: null, feeds: 'sf2' },
+                    qf4: { round: 'quarter-finals', team1: allTeams[8], team2: null, winner: null, feeds: 'sf2' }, // fed by prelim
+                    sf1: { round: 'semi-finals', team1: null, team2: null, winner: null, feeds: 'f1'},
+                    sf2: { round: 'semi-finals', team1: null, team2: null, winner: null, feeds: 'f1'},
+                    f1: { round: 'final', team1: null, team2: null, winner: null, feeds: 'champion'},
                 }
             };
-            let playerToConfirm = null;
-
-            // DOM Elements
-            const nameInputs = document.querySelectorAll('.player-name-input');
-            const selectionCards = document.querySelectorAll('.player-select-card');
-            const startMatchBtn = document.getElementById('start-match-btn');
-            const matchSelectionScreen = document.getElementById('match-selection');
-            const matchScreen = document.getElementById('match-screen');
-            const endMatchBtn = document.getElementById('end-match-btn');
-            const historyList = document.getElementById('history-list');
-            const h2hStatsEl = document.getElementById('h2h-stats');
-            
-            // Modal Elements
-            const modal = document.getElementById('confirmation-modal');
-            const confirmMsg = document.getElementById('confirmation-message');
-            const confirmBtn = document.getElementById('confirm-win');
-            const cancelBtn = document.getElementById('cancel-win');
-
-            // --- Main Functions ---
-            function saveState() {
-                localStorage.setItem('fcProTrackerState', JSON.stringify(state));
-            }
-
-            function loadState() {
-                const savedState = localStorage.getItem('fcProTrackerState');
-                if (savedState) {
-                    state = JSON.parse(savedState);
-                }
-                // Reset transient state
-                state.selectedPlayers = [];
-                state.currentMatch = { p1: null, p2: null, p1_score: 0, p2_score: 0 };
-            }
-
-            function updateUI() {
-                // Update player setup names and wins
-                let maxWins = -1;
-                let king = null;
-                for (const pKey in state.players) {
-                    document.getElementById(`${pKey}_name`).value = state.players[pKey].name;
-                    document.getElementById(`${pKey}_wins_display`).innerHTML = `${state.players[pKey].wins}`;
-                    document.getElementById(`${pKey}_select_card`).textContent = state.players[pKey].name;
-                    if(state.players[pKey].wins > maxWins) {
-                        maxWins = state.players[pKey].wins;
-                        king = pKey;
-                    }
-                }
-                
-                // Update king of the hill
-                document.querySelectorAll('.total-wins').forEach(el => {
-                   el.innerHTML = el.innerHTML.replace('👑 ', '');
-                });
-                if(king && maxWins > 0) {
-                     document.getElementById(`${king}_wins_display`).innerHTML = '👑 ' + document.getElementById(`${king}_wins_display`).innerHTML;
-                }
-
-
-                // Update selection cards UI
-                selectionCards.forEach(card => {
-                    const pKey = card.dataset.player;
-                    if (state.selectedPlayers.includes(pKey)) {
-                        card.classList.add('selected');
-                    } else {
-                        card.classList.remove('selected');
-                    }
-                });
-                startMatchBtn.disabled = state.selectedPlayers.length !== 2;
-
-                // Update match history
-                historyList.innerHTML = '';
-                [...state.matchHistory].reverse().forEach(match => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span><strong>${state.players[match.winner].name}</strong> هزم <strong>${state.players[match.loser].name}</strong></span>
-                        <span class="date">${new Date(match.date).toLocaleDateString('ar-EG')}</span>
-                    `;
-                    historyList.appendChild(li);
-                });
-                
-                // Show correct screen
-                if (state.currentMatch.p1) {
-                    matchSelectionScreen.style.display = 'none';
-                    matchScreen.style.display = 'block';
-                    updateMatchScreenUI();
-                } else {
-                    matchSelectionScreen.style.display = 'block';
-                    matchScreen.style.display = 'none';
-                }
-            }
-
-            function updateMatchScreenUI() {
-                const [p1_key, p2_key] = state.currentMatch.p1 < state.currentMatch.p2 ? [state.currentMatch.p1, state.currentMatch.p2] : [state.currentMatch.p2, state.currentMatch.p1];
-
-                document.getElementById('match_p1_name').textContent = state.players[p1_key].name;
-                document.getElementById('match_p2_name').textContent = state.players[p2_key].name;
-                
-                document.getElementById('match_p1_score').textContent = state.currentMatch.p1_score;
-                document.getElementById('match_p2_score').textContent = state.currentMatch.p2_score;
-
-                document.getElementById('match_p1_win_btn').dataset.player = p1_key;
-                document.getElementById('match_p2_win_btn').dataset.player = p2_key;
-                
-                // H2H stats
-                let p1_h2h_wins = 0;
-                let p2_h2h_wins = 0;
-                state.matchHistory.forEach(match => {
-                    if (match.winner === p1_key && match.loser === p2_key) p1_h2h_wins++;
-                    if (match.winner === p2_key && match.loser === p1_key) p2_h2h_wins++;
-                });
-                h2hStatsEl.textContent = `المواجهات المباشرة: ${p1_h2h_wins} - ${p2_h2h_wins}`;
-            }
-
-            // --- Event Listeners ---
-            nameInputs.forEach(input => {
-                input.addEventListener('input', () => {
-                    const pKey = input.dataset.player;
-                    state.players[pKey].name = input.value;
-                    saveState();
-                    updateUI(); // To update select cards text
-                });
-            });
-
-            selectionCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    const pKey = card.dataset.player;
-                    const index = state.selectedPlayers.indexOf(pKey);
-                    if (index > -1) {
-                        state.selectedPlayers.splice(index, 1);
-                    } else {
-                        if (state.selectedPlayers.length < 2) {
-                            state.selectedPlayers.push(pKey);
-                        }
-                    }
-                    updateUI();
-                });
-            });
-
-            startMatchBtn.addEventListener('click', () => {
-                if (state.selectedPlayers.length === 2) {
-                    state.currentMatch.p1 = state.selectedPlayers[0];
-                    state.currentMatch.p2 = state.selectedPlayers[1];
-                    state.currentMatch.p1_score = 0;
-                    state.currentMatch.p2_score = 0;
-                    updateUI();
-                }
-            });
-
-            endMatchBtn.addEventListener('click', () => {
-                state.currentMatch.p1 = null;
-                state.currentMatch.p2 = null;
-                state.selectedPlayers = [];
-                updateUI();
-            });
-
-            document.querySelectorAll('.add-win-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const winnerKey = e.target.dataset.player;
-                    const loserKey = (winnerKey === state.currentMatch.p1) ? state.currentMatch.p2 : state.currentMatch.p1;
-                    playerToConfirm = { winner: winnerKey, loser: loserKey };
-                    
-                    confirmMsg.textContent = `يا ${state.players[loserKey].name}، هل تؤكد فوز ${state.players[winnerKey].name}؟`;
-                    modal.style.display = 'flex';
-                });
-            });
-
-            confirmBtn.addEventListener('click', () => {
-                if(playerToConfirm) {
-                    // Update overall wins
-                    state.players[playerToConfirm.winner].wins++;
-                    
-                    // Add to match history
-                    state.matchHistory.push({
-                        winner: playerToConfirm.winner,
-                        loser: playerToConfirm.loser,
-                        date: new Date().toISOString()
-                    });
-
-                    // Update current match score (for fun, doesn't persist)
-                    if (playerToConfirm.winner === document.getElementById('match_p1_win_btn').dataset.player) {
-                        state.currentMatch.p1_score++;
-                    } else {
-                        state.currentMatch.p2_score++;
-                    }
-                    
-                    playerToConfirm = null;
-                    modal.style.display = 'none';
-                    saveState();
-                    updateUI();
-                }
-            });
-
-            cancelBtn.addEventListener('click', () => {
-                playerToConfirm = null;
-                modal.style.display = 'none';
-            });
-
-            // Initial Load
-            loadState();
+            saveState();
             updateUI();
+        }
+
+        function setWinner(matchId, winnerTeam) {
+            const match = state.tournament.matches[matchId];
+            match.winner = winnerTeam;
+            
+            const nextMatchId = match.feeds;
+            if(nextMatchId === 'champion') {
+                state.tournament.champion = winnerTeam;
+                state.players[winnerTeam.playerKey].tourneyWins++;
+            } else if (nextMatchId) {
+                const nextMatch = state.tournament.matches[nextMatchId];
+                if (!nextMatch.team1) nextMatch.team1 = winnerTeam;
+                else nextMatch.team2 = winnerTeam;
+            }
+
+            saveState();
+            updateUI();
+        }
+        
+        // --- Event Listeners ---
+        document.getElementById('start-tournament-btn').addEventListener('click', startTournament);
+        
+        document.getElementById('reset-all-btn').addEventListener('click', () => {
+             if(confirm('هل أنت متأكد؟ سيتم حذف كل البيانات بما في ذلك سجل الانتصارات.')){
+                localStorage.removeItem('fcTournamentState');
+                // Re-initialize state
+                state = {
+                    players: { p1: { name: 'اللاعب 1', teams: ['', '', ''], tourneyWins: 0 }, p2: { name: 'اللاعب 2', teams: ['', '', ''], tourneyWins: 0 }, p3: { name: 'اللاعب 3', teams: ['', '', ''], tourneyWins: 0 },},
+                    tournament: null,
+                };
+                updateUI();
+            }
         });
+
+        document.getElementById('back-to-setup-btn').addEventListener('click', () => {
+            if(confirm('هل أنت متأكد؟ سيتم إلغاء البطولة الحالية.')){
+                state.tournament = null;
+                saveState();
+                updateUI();
+            }
+        });
+
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('player-name-input')) {
+                state.players[e.target.dataset.pkey].name = e.target.value;
+            }
+            if (e.target.classList.contains('team-input')) {
+                state.players[e.target.dataset.pkey].teams[e.target.dataset.tindex] = e.target.value;
+            }
+            saveState();
+        });
+        
+        document.addEventListener('click', (e) => {
+            if(e.target.classList.contains('set-winner-btn')){
+                const matchId = e.target.dataset.matchId;
+                matchToConfirm = state.tournament.matches[matchId];
+                const opponentPlayerKey = matchToConfirm.team1.playerKey !== matchToConfirm.team2.playerKey ? (
+                    // Logic to find opponent is complex; simplified to just showing options
+                    // This is a simplification for a 2 player game, for 3+ its safer to just ask
+                ) : null;
+                
+                document.getElementById('confirmation-message').textContent = "من فاز بالمباراة؟";
+                const winnerSelectionDiv = document.getElementById('winner-selection');
+                winnerSelectionDiv.innerHTML = `
+                    <button class="modal-btn winner-option" data-team-name="${matchToConfirm.team1.name}">${matchToConfirm.team1.name}</button>
+                    <button class="modal-btn winner-option" data-team-name="${matchToConfirm.team2.name}">${matchToConfirm.team2.name}</button>
+                `;
+                document.getElementById('modal-title').textContent = `تأكيد نتيجة ${matchToConfirm.team1.name} ضد ${matchToConfirm.team2.name}`;
+                document.getElementById('confirmation-modal').style.display = 'flex';
+            }
+        });
+        
+        document.getElementById('winner-selection').addEventListener('click', (e) => {
+            if(e.target.classList.contains('winner-option')){
+                const teamName = e.target.dataset.teamName;
+                selectedWinner = (matchToConfirm.team1.name === teamName) ? matchToConfirm.team1 : matchToConfirm.team2;
+                
+                // Visual feedback for selection
+                document.querySelectorAll('.winner-option').forEach(btn => btn.style.background = '#6c757d');
+                e.target.style.background = 'var(--primary)';
+                e.target.style.color = 'var(--text-dark)';
+            }
+        });
+
+        document.getElementById('confirm-win').addEventListener('click', () => {
+            if(selectedWinner) {
+                setWinner(matchToConfirm.id, selectedWinner);
+                document.getElementById('confirmation-modal').style.display = 'none';
+                matchToConfirm = null;
+                selectedWinner = null;
+            } else {
+                alert('الرجاء اختيار الفريق الفائز.');
+            }
+        });
+
+        document.getElementById('cancel-win').addEventListener('click', () => {
+            document.getElementById('confirmation-modal').style.display = 'none';
+            matchToConfirm = null;
+            selectedWinner = null;
+        });
+
+        // Initial Load
+        loadState();
+        updateUI();
+    });
     </script>
 </body>
 </html>
