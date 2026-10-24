@@ -381,7 +381,9 @@ input[type=range]{accent-color:var(--a)}
   </div>
   <div class="box">
     <div class="stage"><canvas id="cv" width="1280" height="720"></canvas><div class="ph" id="ph">أضف مقطعًا إلى التايم لاين لبدء المعاينة</div></div>
-    <div class="bar"><button id="play" class="pri">▶ تشغيل</button><span class="time" id="time">0:00.0 / 0:00.0</span></div>
+    <div class="bar"><button id="play" class="pri">▶ تشغيل</button>
+      <label class="row" style="gap:6px">النسبة <select id="asp"><option value="auto">كما هي</option><option value="16:9">16:9</option><option value="9:16">9:16 (ريلز)</option><option value="1:1">1:1</option><option value="4:5">4:5</option><option value="4:3">4:3</option></select></label>
+      <span class="time" id="time">0:00.0 / 0:00.0</span></div>
   </div>
 </div>
 
@@ -412,6 +414,7 @@ input[type=range]{accent-color:var(--a)}
       <input type="color" id="pcol" value="#ffffff" aria-label="لون النص">
       <label class="row"><input type="checkbox" id="pbold"> عريض</label>
       <label class="row"><input type="checkbox" id="pbg"> خلفية</label>
+      <label class="row">حد النص <input type="range" id="psw" min="0" max="20"></label><input type="color" id="psc" value="#000000" aria-label="لون الحد">
     </div>
     <div class="row">
       <label class="row vis">أفقي <input type="range" id="px" min="0" max="100"></label>
@@ -422,12 +425,42 @@ input[type=range]{accent-color:var(--a)}
       <label class="row">المدة <input type="number" id="pdu" step="0.1" min="0.1" style="width:76px"></label>
       <label class="row">ظهور <input type="number" id="pfi" min="0" step="0.1" style="width:64px"></label>
       <label class="row">اختفاء <input type="number" id="pfo" min="0" step="0.1" style="width:64px"></label>
+      <label class="row vis">حركة الدخول <select id="pai"><option value="none">بدون</option><option value="fade">ظهور تدريجي</option><option value="up">صعود</option><option value="down">هبوط</option><option value="left">من اليسار</option><option value="right">من اليمين</option><option value="zoom">تكبير</option><option value="pop">بوب</option><option value="type">كتابة (للنص)</option></select></label>
+      <label class="row vis">حركة الخروج <select id="pao"><option value="none">بدون</option><option value="fade">ظهور تدريجي</option><option value="up">صعود</option><option value="down">هبوط</option><option value="left">من اليسار</option><option value="right">من اليمين</option><option value="zoom">تكبير</option><option value="pop">بوب</option><option value="type">كتابة (للنص)</option></select></label>
+      <label class="row vis">مدتها <input type="number" id="pad" min="0.1" step="0.1" style="width:64px"></label>
       <label class="row" id="pvl">الصوت <input type="range" id="pvol" min="0" max="100"></label>
       <label class="row" id="pml"><input type="checkbox" id="pmute"> كتم الصوت</label>
       <button id="pdel">حذف الطبقة</button>
     </div>
       </div>
     <label class="row" style="margin-inline-start:auto">تكبير <input type="range" id="zoom" min="10" max="240" value="60"></label>
+  </div>
+  <div id="fx" style="display:none;margin-top:10px;padding:8px 10px;background:var(--bg);border:1px solid var(--l);border-radius:8px">
+    <div class="row fxv">
+      <b>الألوان</b>
+      <select id="fpre"><option value="">فلتر جاهز…</option><option value="none">بدون</option><option value="bw">أبيض وأسود</option><option value="sepia">سيبيا</option><option value="warm">دافئ</option><option value="cool">بارد</option><option value="vivid">حيوي</option><option value="vintage">قديم</option><option value="dark">داكن</option></select>
+      <label class="row">السطوع <input type="range" id="fbr" min="30" max="200"></label>
+      <label class="row">التباين <input type="range" id="fco" min="30" max="200"></label>
+      <label class="row">التشبّع <input type="range" id="fsa" min="0" max="250"></label>
+      <label class="row">درجة اللون <input type="range" id="fhu" min="-180" max="180"></label>
+      <label class="row">بلور <input type="range" id="fbl" min="0" max="20"></label>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <b>التحويل</b>
+      <label class="row">تدوير <input type="range" id="frot" min="-180" max="180"></label>
+      <button id="frot90">↻ 90°</button>
+      <label class="row fxv"><input type="checkbox" id="ffh"> قلب أفقي</label>
+      <label class="row fxv"><input type="checkbox" id="ffv"> قلب رأسي</label>
+      <label class="row fxm"><input type="checkbox" id="ffill"> ملء الإطار</label>
+      <button id="freset">إعادة ضبط المظهر</button>
+    </div>
+    <div class="row fxv" style="margin-top:6px">
+      <b>القص %</b>
+      <label class="row">يسار <input type="range" id="fcl" min="0" max="45"></label>
+      <label class="row">يمين <input type="range" id="fcr" min="0" max="45"></label>
+      <label class="row">أعلى <input type="range" id="fct" min="0" max="45"></label>
+      <label class="row">أسفل <input type="range" id="fcb" min="0" max="45"></label>
+    </div>
   </div>
   <div class="row" style="margin-top:10px">
     <button id="addt">T + نص</button>
@@ -507,7 +540,7 @@ function bin(){
     e.querySelector('img').src=m.thumb;e.querySelector('b').textContent=m.name;e.querySelector('small').textContent=fmt(m.dur);
     e.querySelector('.o').onclick=()=>addVid(m);
     e.querySelector('.a').onclick=()=>{
-      snap();const c={id:++uid,m,in:0,out:m.dur,mute:false,sp:1,vol:1,fi:0,fo:0,tr:'none',td:.6};clips.push(c);sel=c.id;build();select(c.id);
+      snap();const c={id:++uid,m,in:0,out:m.dur,mute:false,sp:1,vol:1,fi:0,fo:0,tr:'none',td:.6,fill:$('#asp').value!=='auto'};clips.push(c);sel=c.id;build();select(c.id);
       if(clips.length===1)setT(0);
     };
     B.appendChild(e);
@@ -550,8 +583,7 @@ function loop(){
 function draw(){
   const W=cv.width,H=cv.height;g.fillStyle='#000';g.fillRect(0,0,W,H);
   if(act&&act.m.v.readyState>1){
-    const v=act.m.v,s=Math.min(W/v.videoWidth,H/v.videoHeight),w=v.videoWidth*s,h=v.videoHeight*s;
-    g.drawImage(v,(W-w)/2,(H-h)/2,w,h);
+    const v=act.m.v;paint(v,v.videoWidth,v.videoHeight,act,W,H,true);
   }
   const cvr=cover();if(cvr.a>0){g.globalAlpha=cvr.a;g.fillStyle=cvr.col;g.fillRect(0,0,W,H);g.globalAlpha=1}
   ovs.filter(o=>t>=o.start&&t<o.start+o.dur).sort((a,b)=>a.row-b.row).forEach(drawOv);
@@ -655,10 +687,13 @@ function applyRes(){
     let best=0;
     clips.forEach(c=>{const a=c.m.v.videoWidth*c.m.v.videoHeight;if(a>best){best=a;w=c.m.v.videoWidth;h=c.m.v.videoHeight}});
   }else[w,h]=v.split('x').map(Number);
+  const ra=$('#asp').value;
+  if(ra!=='auto'){const[x,y]=ra.split(':').map(Number),r=x/y,Lg=Math.max(w,h);if(r>=1){w=Lg;h=Lg/r}else{h=Lg;w=Lg*r}}
   w&=~1;h&=~1;
   if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}
 }
 $('#res').onchange=applyRes;
+$('#asp').onchange=()=>{const ra=$('#asp').value;clips.forEach(c=>{if(c.fill===undefined)c.fill=ra!=='auto'});applyRes();fillFx()};
 addEventListener('resize',layout);
 
 /* ---------- التصدير ---------- */
@@ -749,6 +784,7 @@ function trimOv(ev,o,left){
   h.onpointerup=()=>{h.onpointermove=h.onpointerup=null};
 }
 function fillProps(){
+  fillFx();
   const c=clips.find(k=>k.id===sel);P('cprops').style.display=c?'block':'none';
   if(c){P('csp').value=sp(c);P('cspv').textContent=sp(c).toFixed(2)+'x';P('cvol').value=(c.vol??1)*100;P('cfi').value=c.fi||0;P('cfo').value=c.fo||0;P('ctr').value=c.tr||'none';P('ctd').value=c.td||.6}
   const o=so();P('props').style.display=o?'block':'none';if(!o)return;
@@ -756,14 +792,14 @@ function fillProps(){
   P('pwl').style.display=(o.type==='text'||o.type==='audio')?'none':'flex';
   document.querySelectorAll('#props .vis').forEach(x=>x.style.display=o.type==='audio'?'none':'flex');
   P('pml').style.display=med(o)?'flex':'none';P('pvl').style.display=med(o)?'flex':'none';
-  if(o.type==='text'){P('ptxt').value=o.text;P('pfont').value=o.font;P('pfs').value=o.fs*100;P('pcol').value=o.col;P('pbold').checked=o.bold;P('pbg').checked=o.bg}
+  if(o.type==='text'){P('ptxt').value=o.text;P('pfont').value=o.font;P('pfs').value=o.fs*100;P('pcol').value=o.col;P('pbold').checked=o.bold;P('pbg').checked=o.bg;P('psw').value=o.sw||0;P('psc').value=o.sc||'#000000'}
   P('px').value=o.x*100;P('py').value=o.y*100;P('pw').value=o.w*100;P('pop').value=o.op*100;
-  P('pst').value=o.start.toFixed(1);P('pdu').value=o.dur.toFixed(1);P('pmute').checked=!!o.mute;P('pvol').value=(o.vol??1)*100;P('pfi').value=o.fi||0;P('pfo').value=o.fo||0;
+  P('pst').value=o.start.toFixed(1);P('pdu').value=o.dur.toFixed(1);P('pmute').checked=!!o.mute;P('pvol').value=(o.vol??1)*100;P('pfi').value=o.fi||0;P('pfo').value=o.fo||0;P('pai').value=o.ai||'none';P('pao').value=o.ao||'none';P('pad').value=o.ad||.6;
 }
 P('props').oninput=e=>{
   const o=so();if(!o)return;snap(true);
-  o.vol=P('pvol').value/100;o.fi=+P('pfi').value||0;o.fo=+P('pfo').value||0;
-  if(o.type==='text'){o.text=P('ptxt').value;o.font=P('pfont').value;o.fs=P('pfs').value/100;o.col=P('pcol').value;o.bold=P('pbold').checked;o.bg=P('pbg').checked}
+  o.vol=P('pvol').value/100;o.fi=+P('pfi').value||0;o.fo=+P('pfo').value||0;o.ai=P('pai').value;o.ao=P('pao').value;o.ad=+P('pad').value||.6;
+  if(o.type==='text'){o.text=P('ptxt').value;o.font=P('pfont').value;o.fs=P('pfs').value/100;o.col=P('pcol').value;o.bold=P('pbold').checked;o.bg=P('pbg').checked;o.sw=+P('psw').value;o.sc=P('psc').value}
   o.x=P('px').value/100;o.y=P('py').value/100;o.w=P('pw').value/100;o.op=P('pop').value/100;o.mute=P('pmute').checked;
   if(e.target.id==='pst'||e.target.id==='pdu'){o.start=Math.max(0,+P('pst').value||0);o.dur=Math.max(.1,+P('pdu').value||1)}
   if(o.e)o.e.querySelector('span').textContent=ovLabel(o);
@@ -783,22 +819,29 @@ function syncOv(){
 }
 function drawOv(o){
   if(o.type==='audio')return;
-  const W=cv.width,H=cv.height,cx=o.x*W,cy=o.y*H;let w,h;
-  g.save();g.globalAlpha=o.op*(1-ovCover(o));
+  const W=cv.width,H=cv.height,an=anim(o,W,H);
+  let w,h;
+  g.save();g.globalAlpha=Math.max(0,o.op*(1-ovCover(o))*an.a);
+  g.translate(o.x*W+an.dx,o.y*H+an.dy);g.rotate((o.rot||0)*Math.PI/180);g.scale(an.sc,an.sc);
   if(o.type==='text'){
     const fs=o.fs*H,ls=o.text.split('\n'),lh=fs*1.35;
     g.font=(o.bold?'700 ':'400 ')+fs+'px "'+o.font+'",system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';
     w=Math.max(...ls.map(s=>g.measureText(s).width));h=lh*ls.length;
-    if(o.bg){g.fillStyle='rgba(0,0,0,.55)';g.fillRect(cx-w/2-fs*.4,cy-h/2-fs*.2,w+fs*.8,h+fs*.4)}
-    g.fillStyle=o.col;g.shadowColor='rgba(0,0,0,.6)';g.shadowBlur=o.bg?0:fs*.12;
-    ls.forEach((s,i)=>g.fillText(s,cx,cy-h/2+lh*(i+.5)));
+    if(an.tp<1){const rtl=/[\u0600-\u06FF]/.test(o.text),pw=(w+fs)*an.tp;g.beginPath();g.rect(rtl?w/2+fs/2-pw:-w/2-fs/2,-h,pw,h*2);g.clip()}
+    if(o.bg){g.fillStyle='rgba(0,0,0,.55)';g.fillRect(-w/2-fs*.4,-h/2-fs*.2,w+fs*.8,h+fs*.4)}
+    g.shadowColor='rgba(0,0,0,.6)';g.shadowBlur=o.bg?0:fs*.12;
+    ls.forEach((s,i)=>{
+      const y=-h/2+lh*(i+.5);
+      if(o.sw>0){g.lineWidth=o.sw*fs/40;g.strokeStyle=o.sc||'#000';g.lineJoin='round';g.strokeText(s,0,y)}
+      g.fillStyle=o.col;g.fillText(s,0,y);
+    });
   }else{
     const s=o.type==='image'?o.img:o.v,sw=s.videoWidth||s.naturalWidth,sh=s.videoHeight||s.naturalHeight;
     if(!sw||(o.type==='video'&&s.readyState<2)){g.restore();return}
-    w=o.w*W;h=w*sh/sw;g.drawImage(s,cx-w/2,cy-h/2,w,h);
+    ({w,h}=paint(s,sw,sh,o,W,H,false));
   }
+  if(o.id===sel&&!exporting&&w){g.shadowBlur=0;g.strokeStyle='#ffd166';g.lineWidth=Math.max(2,W/500);g.setLineDash([10,6]);g.strokeRect(-w/2,-h/2,w,h)}
   g.restore();
-  if(o.id===sel&&!exporting&&w){g.save();g.strokeStyle='#ffd166';g.lineWidth=Math.max(2,W/500);g.setLineDash([10,6]);g.strokeRect(cx-w/2,cy-h/2,w,h);g.restore()}
 }
 let drag=null;
 cv.onpointerdown=e=>{const o=so();if(!o)return;cv.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,ox:o.x,oy:o.y}};
@@ -878,6 +921,70 @@ P('audf').onchange=async e=>{
   }
   e.target.value='';
 };
+
+/* ===== المظهر: فلاتر، قص، تدوير، حركة ===== */
+function filt(o){
+  const a=[];
+  if(o.br!=null&&o.br!==100)a.push('brightness('+o.br+'%)');
+  if(o.co!=null&&o.co!==100)a.push('contrast('+o.co+'%)');
+  if(o.sa!=null&&o.sa!==100)a.push('saturate('+o.sa+'%)');
+  if(o.hu)a.push('hue-rotate('+o.hu+'deg)');
+  if(o.gr)a.push('grayscale('+o.gr+'%)');
+  if(o.se)a.push('sepia('+o.se+'%)');
+  if(o.bl)a.push('blur('+(o.bl*cv.width/1000).toFixed(1)+'px)');
+  return a.join(' ')||'none';
+}
+function paint(src,sw,sh,o,W,H,main){
+  const cl=o.cl||0,cr=o.cr||0,ct=o.ct||0,cb=o.cb||0,sW=sw*(1-(cl+cr)/100),sH=sh*(1-(ct+cb)/100),a=(o.rot||0)*Math.PI/180;
+  let w,h;
+  if(main){
+    const rw=Math.abs(sW*Math.cos(a))+Math.abs(sH*Math.sin(a)),rh=Math.abs(sW*Math.sin(a))+Math.abs(sH*Math.cos(a));
+    const k=o.fill?Math.max(W/rw,H/rh):Math.min(W/rw,H/rh);w=sW*k;h=sH*k;
+  }else{w=o.w*W;h=w*sH/sW}
+  g.save();g.filter=filt(o);
+  if(main){g.translate(W/2,H/2);g.rotate(a)}
+  g.scale(o.fh?-1:1,o.fv?-1:1);
+  g.drawImage(src,sw*cl/100,sh*ct/100,sW,sH,-w/2,-h/2,w,h);
+  g.restore();
+  return{w,h};
+}
+function anim(o,W,H){
+  const lt=t-o.start,ad=o.ad||.6,r={a:1,dx:0,dy:0,sc:1,tp:1};
+  const ap=(k,x)=>{
+    if(!k||k==='none')return;x=Math.min(1,Math.max(0,x));const p=1-Math.pow(1-x,3);
+    if(['fade','up','down','left','right','zoom'].includes(k))r.a*=p;
+    if(k==='up')r.dy+=(1-p)*H*.08;
+    if(k==='down')r.dy-=(1-p)*H*.08;
+    if(k==='left')r.dx-=(1-p)*W*.15;
+    if(k==='right')r.dx+=(1-p)*W*.15;
+    if(k==='zoom')r.sc*=.6+.4*p;
+    if(k==='pop'){r.a*=Math.min(1,x*4);r.sc*=Math.max(.001,1+2.70158*Math.pow(x-1,3)+1.70158*Math.pow(x-1,2))}
+    if(k==='type')r.tp*=x;
+  };
+  ap(o.ai,lt/ad);ap(o.ao,(o.dur-lt)/ad);
+  return r;
+}
+const FXP={none:{},bw:{gr:100},sepia:{se:80},warm:{sa:120,se:25,br:105},cool:{hu:-25,sa:110},vivid:{co:115,sa:150},vintage:{co:90,sa:80,se:35,br:105},dark:{br:80,co:125}};
+const FXK=['br','co','sa','hu','gr','se','bl'],FXALL=[...FXK,'rot','fh','fv','fill','cl','cr','ct','cb'];
+const fxT=()=>clips.find(k=>k.id===sel)||ovs.find(o=>o.id===sel&&o.type!=='audio');
+function fillFx(){
+  const o=fxT();P('fx').style.display=o?'block':'none';if(!o)return;
+  const txt=o.type==='text';
+  document.querySelectorAll('#fx .fxv').forEach(x=>x.style.display=txt?'none':'flex');
+  document.querySelectorAll('#fx .fxm').forEach(x=>x.style.display=o.type?'none':'flex');
+  P('fbr').value=o.br??100;P('fco').value=o.co??100;P('fsa').value=o.sa??100;P('fhu').value=o.hu||0;P('fbl').value=o.bl||0;
+  P('frot').value=o.rot||0;P('ffh').checked=!!o.fh;P('ffv').checked=!!o.fv;P('ffill').checked=!!o.fill;
+  P('fcl').value=o.cl||0;P('fcr').value=o.cr||0;P('fct').value=o.ct||0;P('fcb').value=o.cb||0;
+}
+P('fx').oninput=e=>{
+  const o=fxT();if(!o)return;snap(true);
+  if(e.target.id==='fpre'){const pr=FXP[P('fpre').value];if(pr){FXK.forEach(k=>delete o[k]);Object.assign(o,pr)}P('fpre').value='';fillFx();return}
+  o.br=+P('fbr').value;o.co=+P('fco').value;o.sa=+P('fsa').value;o.hu=+P('fhu').value;o.bl=+P('fbl').value;
+  o.rot=+P('frot').value;o.fh=P('ffh').checked;o.fv=P('ffv').checked;o.fill=P('ffill').checked;
+  o.cl=+P('fcl').value;o.cr=+P('fcr').value;o.ct=+P('fct').value;o.cb=+P('fcb').value;
+};
+P('frot90').onclick=()=>{const o=fxT();if(!o)return;snap();o.rot=(o.rot||0)+90;if(o.rot>180)o.rot-=360;fillFx()};
+P('freset').onclick=()=>{const o=fxT();if(!o)return;snap();FXALL.forEach(k=>delete o[k]);fillFx()};
 
 build();loop();
 <\/script>
