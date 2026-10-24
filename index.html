@@ -391,16 +391,7 @@ input[type=range]{accent-color:var(--a)}
     <button id="del">حذف المحدد (Delete)</button>
     <button id="mute">كتم / تشغيل صوت المقطع</button>
     <button id="bk">◀ تقديم</button><button id="fw">تأخير ▶</button>
-    <label class="row" style="margin-inline-start:auto">تكبير <input type="range" id="zoom" min="10" max="240" value="60"></label>
-  </div>
-  <div class="row" style="margin-top:10px">
-    <button id="addt">T + نص</button>
-    <button id="addi">🖼 + صورة / لوجو</button><input type="file" id="imgf" accept="image/*" multiple hidden>
-    <button id="addl">＋ طبقة</button>
-    <span style="color:var(--m);font-size:12px">فيديو فوق الفيديو: زر «+ فوق الفيديو» في مكتبة الملفات. الطبقات الأعلى تظهر فوق الأدنى.</span>
-  </div>
-  <div id="wrap"><div id="tl"><div id="ruler"></div><div id="ovrows"></div><div id="track"></div><div id="head"></div></div></div>
-  <div id="props" style="display:none;margin-top:10px;padding:10px;background:var(--bg);border:1px solid var(--l);border-radius:8px">
+    <div id="props" style="display:none;flex:1 1 360px;padding:8px 10px;background:var(--bg);border:1px solid var(--l);border-radius:8px">
     <div class="row" id="pt" style="margin-bottom:8px">
       <textarea id="ptxt" rows="2" dir="auto" placeholder="اكتب النص هنا (يدعم العربية)" style="flex:1;min-width:200px"></textarea>
       <select id="pfont"><option>IBM Plex Sans Arabic</option><option>Cairo</option><option>Tajawal</option><option>Amiri</option><option>Arial</option></select>
@@ -419,8 +410,17 @@ input[type=range]{accent-color:var(--a)}
       <label class="row" id="pml"><input type="checkbox" id="pmute"> كتم الصوت</label>
       <button id="pdel">حذف الطبقة</button>
     </div>
-    <p class="hint">يمكنك أيضًا سحب العنصر مباشرة داخل شاشة العرض لتحريكه.</p>
+      </div>
+    <label class="row" style="margin-inline-start:auto">تكبير <input type="range" id="zoom" min="10" max="240" value="60"></label>
   </div>
+  <div class="row" style="margin-top:10px">
+    <button id="addt">T + نص</button>
+    <button id="addi">🖼 + صورة / لوجو</button><input type="file" id="imgf" accept="image/*" multiple hidden>
+    <button id="addl">＋ طبقة</button>
+    <span style="color:var(--m);font-size:12px">فيديو فوق الفيديو: زر «+ فوق الفيديو» في مكتبة الملفات. الطبقات الأعلى تظهر فوق الأدنى.</span>
+  </div>
+  <div id="wrap"><div id="tl"><div id="ruler"></div><div id="ovrows"></div><div id="track"></div><div id="head"></div></div></div>
+
   <p class="hint">اضغط على الشريط العلوي للتنقل. اسحب الحافة الصفراء لأي مقطع لقصّ بدايته أو نهايته. التقديم والتأخير يغيّران ترتيب المقطع المحدد.</p>
   <p class="msg" id="err"></p>
 </div>
