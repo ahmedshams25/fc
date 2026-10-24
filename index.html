@@ -1,796 +1,642 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>ClientChat - Professional Dashboard</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-    <style>
-
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
-
-        body { font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: #F8F9FE; overflow-x: hidden; }
-
-        .sidebar-active { background-color: #EEEAFB; color: #6366F1; border-radius: 12px; }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
-
-        .task-card { cursor: grab; transition: all 0.2s; position: relative; }
-
-        .project-view { display: none; }
-
-        .project-view.active { display: block; }
-
-        .chat-bubble { font-size: 14px; line-height: 1.6; max-width: 95%; }
-
-
-
-        @media (max-width: 1024px) {
-
-            aside { position: fixed; right: -100%; top: 0; height: 100%; transition: 0.3s; z-index: 50; }
-
-            aside.open { right: 0; }
-
-            .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; }
-
-            .overlay.active { display: block; }
-
-        }
-
-    </style>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>استوديو الميديا — صوت وفيديو</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f0ec;--bar:#fff;--ink:#16181d;--mute:#6a6f7a;--line:#dcd8d0;--a:#ff6a4d}
+@media (prefers-color-scheme:dark){:root{--bg:#101318;--bar:#181c23;--ink:#eceef2;--mute:#8f96a3;--line:#2a303a}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 "IBM Plex Sans Arabic",system-ui,sans-serif;display:flex;flex-direction:column}
+nav{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--bar);border-bottom:1px solid var(--line);flex-wrap:wrap}
+nav b{font-size:18px;margin-inline-end:14px}
+nav button{font:inherit;color:var(--mute);background:none;border:0;border-bottom:3px solid transparent;padding:8px 14px;cursor:pointer;border-radius:8px 8px 0 0}
+nav button:hover{color:var(--ink)}
+nav button[aria-selected=true]{color:var(--ink);font-weight:700;border-bottom-color:var(--a)}
+nav button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+main{flex:1;min-height:0;position:relative}
+iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}
+iframe[hidden]{display:none}
+</style>
 </head>
-
-<body class="flex h-screen text-gray-800 text-right">
-
-
-
-    <div id="sidebar-overlay" class="overlay" onclick="toggleSidebar()"></div>
-
-
-
-    <!-- القائمة الجانبية -->
-
-    <aside id="main-sidebar" class="w-64 bg-white border-l border-gray-200 flex flex-col p-4">
-
-        <div class="flex items-center justify-between mb-10 px-2">
-
-            <div class="flex items-center gap-2">
-
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
-
-                    <i class="fas fa-comment-dots"></i>
-
-                </div>
-
-                <span class="text-xl font-bold">ClientChat</span>
-
-            </div>
-
-            <button onclick="toggleSidebar()" class="lg:hidden text-gray-400"><i class="fas fa-times text-xl"></i></button>
-
-        </div>
-
-        
-
-        <nav class="flex-1 space-y-2 overflow-y-auto custom-scrollbar">
-
-            <a href="javascript:void(0)" onclick="showView('projects-list'); toggleSidebar();" class="flex items-center gap-3 p-3 text-sm font-medium text-gray-500 hover:bg-gray-50 rounded-xl transition">
-
-                <i class="fas fa-th-large w-5"></i> لوحة التحكم
-
-            </a>
-
-            
-
-            <div class="pt-6">
-
-                <div class="flex justify-between items-center px-3 mb-2">
-
-                    <p class="text-[10px] uppercase font-bold text-gray-400">مشاريعك</p>
-
-                    <button onclick="createNewProject()" class="text-indigo-600 hover:text-indigo-800 text-xs"><i class="fas fa-plus-circle"></i></button>
-
-                </div>
-
-                <div id="sidebar-projects-list" class="space-y-1"></div>
-
-            </div>
-
-        </nav>
-
-    </aside>
-
-
-
-    <main class="flex-1 overflow-y-auto relative h-full custom-scrollbar">
-
-        <!-- زر الموبايل العلوي -->
-
-        <div class="lg:hidden p-4 bg-white border-b flex items-center justify-between sticky top-0 z-30">
-
-            <button onclick="toggleSidebar()" class="text-indigo-600 p-2"><i class="fas fa-bars text-xl"></i></button>
-
-            <span class="font-bold">لوحة التحكم</span>
-
-            <div class="w-8"></div>
-
-        </div>
-
-
-
-        <div class="p-4 lg:p-8">
-
-            <section id="view-projects-list" class="project-view active space-y-6">
-
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-
-                    <h2 class="text-2xl font-bold">المشاريع</h2>
-
-                    <button onclick="createNewProject()" class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2 font-medium shadow-lg shadow-indigo-100">
-
-                        <i class="fas fa-plus"></i> مشروع جديد
-
-                    </button>
-
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-grid"></div>
-
-            </section>
-
-
-
-            <section id="view-project-detail" class="project-view space-y-8">
-
-                <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-
-                    <div>
-
-                        <h1 class="text-2xl font-bold flex items-center gap-2">
-
-                            <span id="detail-title">--</span> 
-
-                            <i class="fas fa-pen text-sm text-gray-300 cursor-pointer hover:text-indigo-600" onclick="editProjectData()"></i>
-
-                        </h1>
-
-                        <p class="text-sm text-gray-400 mt-1">العميل: <span id="detail-client" class="text-gray-600 font-medium">--</span> <span class="mx-2">|</span> الموعد: <span id="detail-deadline" class="text-indigo-600">--</span></p>
-
-                    </div>
-
-                    <div class="flex items-center gap-4 w-full lg:w-auto">
-
-                        <div class="bg-white px-4 py-2 border rounded-xl shadow-sm text-left flex-1 lg:flex-none">
-
-                            <p class="text-[10px] text-gray-400">الميزانية</p>
-
-                            <p class="text-sm font-bold text-green-600" id="detail-cost">--</p>
-
-                        </div>
-
-                        <button onclick="showView('projects-list')" class="bg-gray-100 text-gray-600 px-6 py-2 rounded-xl font-medium hover:bg-gray-200 transition">خروج</button>
-
-                    </div>
-
-                </header>
-
-
-
-                <div class="grid grid-cols-12 gap-6">
-
-                    <!-- المحادثة -->
-
-                    <div class="col-span-12 lg:col-span-3 space-y-4 flex flex-col h-[500px] lg:h-[650px]">
-
-                        <div class="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm flex flex-col h-full">
-
-                            <div class="flex justify-between items-center mb-4">
-
-                                <h3 class="font-bold italic">1. Conversation</h3>
-
-                                <i class="fab fa-whatsapp text-green-500 text-xl"></i>
-
-                            </div>
-
-                            <div class="flex-1 space-y-4 overflow-y-auto mb-4 custom-scrollbar px-1" id="detail-chat"></div>
-
-                            <div class="space-y-2">
-
-                                <input type="text" id="chat-input" placeholder="اكتب ملاحظة..." class="w-full bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-1 focus:ring-indigo-300">
-
-                                <button onclick="addMessage()" class="w-full bg-indigo-600 text-white py-3 rounded-2xl font-bold text-sm shadow-lg shadow-indigo-100 transition hover:bg-indigo-700">ارسال</button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <div class="col-span-12 lg:col-span-6 space-y-6">
-
-                        <div class="bg-white rounded-[32px] p-6 border border-gray-100 shadow-sm">
-
-                            <h3 class="font-bold mb-4 text-gray-400 text-xs uppercase tracking-wider">2. Project Summary</h3>
-
-                            <div class="bg-gray-50 rounded-2xl p-5 mb-6 border border-gray-100">
-
-                                <p class="text-sm text-gray-600 leading-relaxed font-medium" id="detail-desc">--</p>
-
-                            </div>
-
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-
-                                <div class="text-center p-2 border border-gray-50 rounded-xl bg-[#F8F9FE]"><p class="text-[9px] text-gray-400">Type</p><p class="text-[11px] font-bold text-indigo-600" id="detail-type">--</p></div>
-
-                                <div class="text-center p-2 border border-gray-50 rounded-xl bg-[#F8F9FE]"><p class="text-[9px] text-gray-400">Duration</p><p class="text-[11px] font-bold text-indigo-600" id="detail-duration">--</p></div>
-
-                                <div class="text-center p-2 border border-gray-50 rounded-xl bg-[#F8F9FE]"><p class="text-[9px] text-gray-400">Deadline</p><p class="text-[11px] font-bold text-indigo-600" id="detail-deadline-box">--</p></div>
-
-                                <div class="text-center p-2 border border-gray-50 rounded-xl bg-[#F8F9FE]"><p class="text-[9px] text-gray-400">Status</p><p id="detail-status-text" class="text-[11px] font-bold text-green-600">Active</p></div>
-
-                            </div>
-
-                            
-
-                            <div class="flex justify-between items-center mb-4 pt-4 border-t border-gray-50">
-
-                                <h4 class="text-sm font-bold">ملاحظات العميل</h4>
-
-                                <button onclick="addClientNote()" class="text-[10px] text-indigo-600 font-bold hover:underline">+ إضافة ملاحظة</button>
-
-                            </div>
-
-                            <div class="space-y-2" id="detail-notes-list"></div>
-
-                        </div>
-
-
-
-                        <div class="bg-white rounded-[32px] p-6 border border-gray-100 shadow-sm overflow-x-auto">
-
-                            <div class="flex justify-between items-center mb-6 min-w-[500px]">
-
-                                <h3 class="font-bold text-sm">Tasks</h3>
-
-                                <button onclick="addTask('todo')" class="text-[10px] bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg font-bold">+ New Task</button>
-
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-4 min-w-[500px]">
-
-                                <div class="space-y-3">
-
-                                    <div class="text-[10px] font-bold px-1 mb-2 text-gray-400 uppercase">To Do</div>
-
-                                    <div id="list-todo" class="min-h-[100px] space-y-3" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-                                </div>
-
-                                <div class="space-y-3">
-
-                                    <div class="text-[10px] font-bold px-1 mb-2 text-orange-400 uppercase">In Progress</div>
-
-                                    <div id="list-progress" class="min-h-[100px] space-y-3" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-                                </div>
-
-                                <div class="space-y-3">
-
-                                    <div class="text-[10px] font-bold px-1 mb-2 text-green-500 uppercase">Done</div>
-
-                                    <div id="list-done" class="min-h-[100px] space-y-3" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <div class="col-span-12 lg:col-span-3 space-y-6">
-
-                        <div class="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm">
-
-                            <div class="flex justify-between items-center mb-4">
-
-                                <h3 class="text-sm font-bold">Project Links</h3>
-
-                                <button onclick="addLink()" class="text-indigo-600"><i class="fas fa-plus-circle text-sm"></i></button>
-
-                            </div>
-
-                            <div class="space-y-3" id="detail-links-list"></div>
-
-                            <p id="no-links-msg" class="text-[10px] text-gray-400 italic text-center py-4">لا توجد روابط مضافة بعد</p>
-
-                        </div>
-
-
-
-                        <!-- قسم أرشفة المشروع المُعدل -->
-
-                        <div id="archive-section" class="bg-indigo-600 rounded-3xl p-6 text-white text-center shadow-lg shadow-indigo-100 transition-all duration-500">
-
-                            <i id="archive-icon" class="fas fa-rocket text-2xl mb-4 opacity-50 transition-all"></i>
-
-                            <p id="archive-title" class="text-xs font-bold mb-2">هل اكتمل المشروع؟</p>
-
-                            <button id="archive-btn" onclick="archiveProject()" class="bg-white text-indigo-600 text-[10px] font-bold py-2 px-6 rounded-xl w-full hover:bg-gray-100 transition shadow-sm">أرشفة المشروع</button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </div>
-
-    </main>
-
-
-
-    <script>
-
-        function toggleSidebar() {
-
-            document.getElementById('main-sidebar').classList.toggle('open');
-
-            document.getElementById('sidebar-overlay').classList.toggle('active');
-
-        }
-
-
-
-        let projects = JSON.parse(localStorage.getItem('cc_pro_v3')) || [];
-
-        let currentId = null;
-
-
-
-        function save() { 
-
-            localStorage.setItem('cc_pro_v3', JSON.stringify(projects)); 
-
-            renderProjects(); 
-
-        }
-
-
-
-        function showView(v) {
-
-            document.querySelectorAll('.project-view').forEach(el => el.classList.remove('active'));
-
-            document.getElementById('view-' + v).classList.add('active');
-
-        }
-
-
-
-        function createNewProject() {
-
-            const title = prompt("اسم المشروع الجديد:");
-
-            if(!title) return;
-
-            const p = {
-
-                id: Date.now(), title, client: 'عميل جديد', desc: 'اكتب نبذة عن المشروع هنا...',
-
-                type: 'Motion Graphics', cost: '$0', deadline: '2026-05-20', duration: '45s',
-
-                isArchived: false,
-
-                notes: [], chat: [], links: [], tasks: { todo: [], progress: [], done: [] }
-
-            };
-
-            projects.push(p); save(); openProject(p.id);
-
-        }
-
-
-
-        function renderProjects() {
-
-            const grid = document.getElementById('projects-grid');
-
-            const side = document.getElementById('sidebar-projects-list');
-
-            grid.innerHTML = side.innerHTML = '';
-
-            projects.forEach(p => {
-
-                grid.innerHTML += `
-
-                    <div onclick="openProject(${p.id})" class="bg-white p-6 rounded-[32px] border ${p.isArchived ? 'border-green-200' : 'border-gray-100'} shadow-sm hover:border-indigo-200 transition cursor-pointer relative overflow-hidden">
-
-                        ${p.isArchived ? '<div class="absolute top-0 left-0 bg-green-500 text-white text-[8px] px-3 py-1 rounded-br-xl font-bold uppercase">Archived</div>' : ''}
-
-                        <div class="w-10 h-10 ${p.isArchived ? 'bg-green-50 text-green-600' : 'bg-indigo-50 text-indigo-600'} rounded-xl mb-4 flex items-center justify-center font-bold">${p.title[0]}</div>
-
-                        <h4 class="font-bold text-gray-800 mb-1">${p.title}</h4>
-
-                        <p class="text-[10px] text-gray-400 mb-4">${p.client}</p>
-
-                        <div class="flex justify-between items-center text-[10px] font-bold ${p.isArchived ? 'text-green-600' : 'text-indigo-600'} pt-3 border-t">
-
-                            <span>${p.cost}</span> <span>${p.deadline}</span>
-
-                        </div>
-
-                    </div>`;
-
-                side.innerHTML += `
-
-                    <button onclick="openProject(${p.id}); if(window.innerWidth < 1024) toggleSidebar();" class="w-full text-right p-3 text-xs text-gray-500 hover:bg-indigo-50 rounded-xl flex items-center gap-2 transition">
-
-                        <div class="w-2 h-2 ${p.isArchived ? 'bg-green-400' : 'bg-indigo-400'} rounded-full"></div> ${p.title}
-
-                    </button>`;
-
-            });
-
-        }
-
-
-
-        function openProject(id) {
-
-            currentId = id;
-
-            const p = projects.find(x => x.id === id);
-
-            document.getElementById('detail-title').innerText = p.title;
-
-            document.getElementById('detail-client').innerText = p.client;
-
-            document.getElementById('detail-cost').innerText = p.cost;
-
-            document.getElementById('detail-type').innerText = p.type;
-
-            document.getElementById('detail-deadline').innerText = p.deadline;
-
-            document.getElementById('detail-deadline-box').innerText = p.deadline;
-
-            document.getElementById('detail-duration').innerText = p.duration;
-
-            document.getElementById('detail-desc').innerText = p.desc;
-
-            
-
-            resetArchiveUI(p.isArchived);
-
-            renderNotes(p); renderTasks(p); renderChat(p); renderLinks(p);
-
-            showView('project-detail');
-
-        }
-
-
-
-        // دالة الأرشفة الجديدة مع تغيير الألوان
-
-        function archiveProject() {
-
-            const p = projects.find(x => x.id === currentId);
-
-            p.isArchived = true;
-
-            
-
-            const section = document.getElementById('archive-section');
-
-            const btn = document.getElementById('archive-btn');
-
-            const icon = document.getElementById('archive-icon');
-
-            const title = document.getElementById('archive-title');
-
-            const statusText = document.getElementById('detail-status-text');
-
-
-
-            section.classList.replace('bg-indigo-600', 'bg-green-500');
-
-            btn.innerText = 'تم الإنتهاء';
-
-            btn.classList.replace('text-indigo-600', 'text-green-600');
-
-            icon.classList.replace('fa-rocket', 'fa-check-circle');
-
-            icon.classList.replace('opacity-50', 'opacity-100');
-
-            title.innerText = 'المشروع مكتمل!';
-
-            statusText.innerText = 'Completed';
-
-            statusText.className = 'text-[11px] font-bold text-green-600';
-
-
-
-            save();
-
-        }
-
-
-
-        function resetArchiveUI(isArchived) {
-
-            const section = document.getElementById('archive-section');
-
-            const btn = document.getElementById('archive-btn');
-
-            const icon = document.getElementById('archive-icon');
-
-            const title = document.getElementById('archive-title');
-
-            const statusText = document.getElementById('detail-status-text');
-
-
-
-            if (isArchived) {
-
-                section.className = 'bg-green-500 rounded-3xl p-6 text-white text-center shadow-lg shadow-green-100 transition-all duration-500';
-
-                btn.innerText = 'تم الإنتهاء';
-
-                btn.className = 'bg-white text-green-600 text-[10px] font-bold py-2 px-6 rounded-xl w-full shadow-sm';
-
-                icon.className = 'fas fa-check-circle text-2xl mb-4 opacity-100 transition-all';
-
-                title.innerText = 'المشروع مكتمل!';
-
-                statusText.innerText = 'Completed';
-
-            } else {
-
-                section.className = 'bg-indigo-600 rounded-3xl p-6 text-white text-center shadow-lg shadow-indigo-100 transition-all duration-500';
-
-                btn.innerText = 'أرشفة المشروع';
-
-                btn.className = 'bg-white text-indigo-600 text-[10px] font-bold py-2 px-6 rounded-xl w-full hover:bg-gray-100 transition shadow-sm';
-
-                icon.className = 'fas fa-rocket text-2xl mb-4 opacity-50 transition-all';
-
-                title.innerText = 'هل اكتمل المشروع؟';
-
-                statusText.innerText = 'Active';
-
-            }
-
-        }
-
-
-
-        function editProjectData() {
-
-            const p = projects.find(x => x.id === currentId);
-
-            p.title = prompt("اسم المشروع:", p.title) || p.title;
-
-            p.client = prompt("اسم العميل:", p.client) || p.client;
-
-            p.cost = prompt("التكلفة:", p.cost) || p.cost;
-
-            p.deadline = prompt("تاريخ التسليم:", p.deadline) || p.deadline;
-
-            p.desc = prompt("وصف المشروع:", p.desc) || p.desc;
-
-            p.type = prompt("نوع المشروع:", p.type) || p.type;
-
-            p.duration = prompt("المدة:", p.duration) || p.duration;
-
-            save(); openProject(currentId);
-
-        }
-
-
-
-        function addClientNote() {
-
-            const n = prompt("اكتب ملاحظة العميل:");
-
-            if(n) { projects.find(x => x.id === currentId).notes.push(n); save(); openProject(currentId); }
-
-        }
-
-        function renderNotes(p) {
-
-            document.getElementById('detail-notes-list').innerHTML = p.notes.map((n, i) => `
-
-                <div class="bg-orange-50 p-3 rounded-2xl text-[11px] text-orange-700 flex justify-between items-center group">
-
-                    <span><i class="fas fa-info-circle ml-2"></i> ${n}</span>
-
-                    <i class="fas fa-times cursor-pointer opacity-50 hover:opacity-100" onclick="deleteNote(${i})"></i>
-
-                </div>`).join('');
-
-        }
-
-        function deleteNote(i) { projects.find(x => x.id === currentId).notes.splice(i, 1); save(); openProject(currentId); }
-
-
-
-        function addLink() {
-
-            const name = prompt("اسم الرابط (مثال: Google Drive):");
-
-            const url = prompt("الصق الرابط هنا:");
-
-            if(name && url) { 
-
-                projects.find(x => x.id === currentId).links.push({name, url}); 
-
-                save(); openProject(currentId); 
-
-            }
-
-        }
-
-        function renderLinks(p) {
-
-            const list = document.getElementById('detail-links-list');
-
-            const msg = document.getElementById('no-links-msg');
-
-            if(p.links.length > 0) {
-
-                msg.style.display = 'none';
-
-                list.innerHTML = p.links.map((l, i) => `
-
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl group">
-
-                        <a href="${l.url}" target="_blank" class="text-xs font-bold text-indigo-600 hover:underline flex items-center gap-2">
-
-                            <i class="fas fa-link text-[10px]"></i> ${l.name}
-
-                        </a>
-
-                        <i class="fas fa-trash text-[10px] text-red-300 cursor-pointer" onclick="deleteLink(${i})"></i>
-
-                    </div>`).join('');
-
-            } else {
-
-                msg.style.display = 'block';
-
-                list.innerHTML = '';
-
-            }
-
-        }
-
-        function deleteLink(i) { projects.find(x => x.id === currentId).links.splice(i, 1); save(); openProject(currentId); }
-
-
-
-        function allowDrop(ev) { ev.preventDefault(); }
-
-        function drag(ev) { ev.dataTransfer.setData("tid", ev.target.id); ev.target.classList.add('dragging'); }
-
-        function drop(ev) {
-
-            ev.preventDefault();
-
-            const tid = ev.dataTransfer.getData("tid");
-
-            const targetCol = ev.currentTarget.id.replace('list-', '');
-
-            const p = projects.find(x => x.id === currentId);
-
-            let obj = null;
-
-            ['todo', 'progress', 'done'].forEach(s => {
-
-                const idx = p.tasks[s].findIndex(t => t.id == tid);
-
-                if(idx > -1) obj = p.tasks[s].splice(idx, 1)[0];
-
-            });
-
-            if(obj) { p.tasks[targetCol].push(obj); save(); openProject(currentId); }
-
-        }
-
-
-
-        function addTask(col) {
-
-            const n = prompt("اسم المهمة:");
-
-            if(n) { projects.find(x => x.id === currentId).tasks[col].push({id: Date.now(), name: n}); save(); openProject(currentId); }
-
-        }
-
-
-
-        function renderTasks(p) {
-
-            ['todo', 'progress', 'done'].forEach(s => {
-
-                document.getElementById('list-'+s).innerHTML = p.tasks[s].map(t => `
-
-                    <div id="${t.id}" draggable="true" ondragstart="drag(event)" class="task-card bg-white border border-gray-100 p-4 rounded-2xl text-xs font-bold shadow-sm ${s === 'done' ? 'opacity-50 line-through' : ''}">
-
-                        ${t.name}
-
-                        <div class="flex justify-end mt-3 pt-3 border-t border-gray-50">
-
-                             <div class="w-1.5 h-1.5 rounded-full ${s === 'todo' ? 'bg-purple-400' : s === 'progress' ? 'bg-orange-400' : 'bg-green-500'}"></div>
-
-                        </div>
-
-                    </div>`).join('');
-
-            });
-
-        }
-
-
-
-        function addMessage() {
-
-            const inp = document.getElementById('chat-input');
-
-            if(inp.value) {
-
-                projects.find(x => x.id === currentId).chat.push({t: inp.value, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})});
-
-                inp.value = ''; save(); renderChat(projects.find(x => x.id === currentId));
-
-            }
-
-        }
-
-
-
-        function renderChat(p) {
-
-            const box = document.getElementById('detail-chat');
-
-            box.innerHTML = p.chat.map(m => `
-
-                <div class="chat-bubble bg-indigo-50 p-4 rounded-2xl rounded-tr-none self-start ml-auto shadow-sm">
-
-                    <p class="text-gray-700">${m.t}</p>
-
-                    <span class="block text-[9px] text-indigo-300 mt-2 font-bold">${m.time}</span>
-
-                </div>`).join('');
-
-            box.scrollTop = box.scrollHeight;
-
-        }
-
-
-
-        renderProjects();
-
-    </script>
-
+<body>
+<nav role="tablist">
+  <b>استوديو الميديا</b>
+  <button role="tab" id="t-a" aria-selected="true" data-k="a">🎵 الصوت — قص ودمج وتحويل</button>
+  <button role="tab" id="t-v" aria-selected="false" data-k="v">🎬 الفيديو — مونتاج وتايم لاين</button>
+</nav>
+<main>
+  <iframe id="f-a" title="استوديو الصوت"></iframe>
+  <iframe id="f-v" title="استوديو الفيديو" hidden></iframe>
+</main>
+<script type="text/plain" id="tpl-a"><!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>استوديو الصوت — قص ودمج وتحويل</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"><\/script>
+<style>
+:root{--bg:#f2f0ec;--panel:#fff;--ink:#16181d;--mute:#6a6f7a;--line:#dcd8d0;--wave:#2b6f77;--sel:rgba(226,86,58,.18);--cut:#e2563a;--ok:#1d7a4f;--r:14px}
+@media (prefers-color-scheme:dark){:root{--bg:#101318;--panel:#181c23;--ink:#eceef2;--mute:#8f96a3;--line:#2a303a;--wave:#6fc3cc;--sel:rgba(255,120,90,.22);--cut:#ff7a5a;--ok:#5ad19a}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif;padding:24px 16px 80px}
+main{max-width:860px;margin:0 auto}
+h1{font-size:28px;margin:0 0 4px;font-weight:700}
+.sub{color:var(--mute);margin:0 0 22px}
+.drop{border:2px dashed var(--line);border-radius:var(--r);padding:28px;text-align:center;cursor:pointer;background:var(--panel);transition:border-color .15s,background .15s}
+.drop.on,.drop:hover{border-color:var(--cut)}
+.drop b{display:block;font-size:17px}
+.drop span{color:var(--mute);font-size:13px}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:7px 14px}
+button:hover{border-color:var(--mute)}
+button:focus-visible,select:focus-visible,input:focus-visible,.drop:focus-visible{outline:2px solid var(--cut);outline-offset:2px}
+button.pri{background:var(--cut);border-color:var(--cut);color:#fff;font-weight:700;padding:10px 22px}
+button:disabled{opacity:.5;cursor:default}
+#list{display:grid;gap:12px;margin:18px 0}
+.clip{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.top{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.name{flex:1;min-width:140px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.idx{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:13px;font-weight:700}
+.ib{padding:4px 10px}
+canvas{display:block;width:100%;height:92px;border-radius:8px;background:var(--bg);touch-action:none;cursor:col-resize;direction:ltr}
+.meta{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap;color:var(--mute);font-size:13px}
+.meta b{color:var(--ink);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.meta .sp{flex:1}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:16px}
+label{display:grid;gap:4px;font-size:13px;color:var(--mute)}
+select,input[type=text],input[type=number]{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;color:var(--ink)}
+.chk{display:flex;gap:8px;align-items:center;color:var(--ink);font-size:14px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:14px;display:none}
+.bar i{display:block;height:100%;width:0;background:var(--cut);transition:width .1s}
+#res{margin-top:16px;display:none}
+#res audio{width:100%;margin:8px 0}
+#res a{display:inline-block;background:var(--ok);color:#fff;text-decoration:none;padding:9px 20px;border-radius:10px;font-weight:700}
+.msg{color:var(--cut);margin:10px 0 0;min-height:1em;font-size:14px}
+.empty{color:var(--mute);text-align:center;padding:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <h1>استوديو الصوت</h1>
+  <p class="sub">قص أي مقطع، رتّب المقاطع، ادمجها في ملف واحد، وصدّره MP3 أو WAV. كل المعالجة تتم داخل متصفحك.</p>
+
+  <div class="drop" id="drop" tabindex="0" role="button">
+    <b>اسحب الملفات هنا أو اضغط للاختيار</b>
+    <span>MP3 · WAV · OGG · M4A · AAC · FLAC · WEBM · وصوت الفيديو (حسب ما يدعمه المتصفح)</span>
+    <input type="file" id="file" accept="audio/*,video/*" multiple hidden>
+  </div>
+  <p class="msg" id="err"></p>
+
+  <section id="list"></section>
+
+  <section class="panel" id="out">
+    <div class="grid">
+      <label>صيغة الإخراج
+        <select id="fmt"><option value="mp3">MP3</option><option value="wav">WAV (بدون ضغط)</option></select>
+      </label>
+      <label>جودة MP3
+        <select id="kbps"><option>128</option><option selected>192</option><option>256</option><option>320</option></select>
+      </label>
+      <label>معدل العينة
+        <select id="sr"><option value="44100" selected>44.1 kHz</option><option value="48000">48 kHz</option><option value="22050">22.05 kHz</option></select>
+      </label>
+      <label>القنوات
+        <select id="ch"><option value="2" selected>ستيريو</option><option value="1">مونو</option></select>
+      </label>
+      <label>فاصل صمت بين المقاطع (ثانية)
+        <input type="number" id="gap" min="0" max="10" step="0.1" value="0">
+      </label>
+      <label>اسم الملف
+        <input type="text" id="fname" value="merged" dir="ltr">
+      </label>
+    </div>
+    <label class="chk"><input type="checkbox" id="fade" checked> تنعيم حواف كل مقطع (50 ملي ثانية) لمنع طقطقة القص</label>
+    <div style="margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <button class="pri" id="go" disabled>دمج وتصدير</button>
+      <span id="tot" style="color:var(--mute)"></span>
+    </div>
+    <div class="bar" id="bar"><i id="fill"></i></div>
+    <div id="res"><b>تم التصدير</b><audio controls id="pl"></audio><a id="dl">تحميل الملف</a></div>
+  </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+let actx,clips=[],uid=0,cur=null,raf=0;
+const AC=()=>actx||(actx=new (window.AudioContext||window.webkitAudioContext)());
+const fmt=t=>{t=Math.max(0,t);const m=Math.floor(t/60),s=(t%60).toFixed(2).padStart(5,'0');return m+':'+s};
+const err=m=>$('#err').textContent=m||'';
+
+/* ---------- إضافة الملفات ---------- */
+const drop=$('#drop'),fileIn=$('#file');
+drop.onclick=()=>fileIn.click();
+drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fileIn.click()}};
+fileIn.onchange=()=>{add([...fileIn.files]);fileIn.value=''};
+['dragenter','dragover'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.add('on')}));
+['dragleave','drop'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.remove('on')}));
+drop.addEventListener('drop',e=>add([...e.dataTransfer.files]));
+
+async function add(files){
+  err();const bad=[];
+  for(const f of files){
+    try{
+      const buf=await AC().decodeAudioData(await f.arrayBuffer());
+      clips.push({id:++uid,name:f.name,buf,start:0,end:buf.duration,peaks:peaks(buf)});
+    }catch(e){bad.push(f.name)}
+  }
+  if(bad.length)err('تعذّر قراءة: '+bad.join('، ')+' — الصيغة غير مدعومة في هذا المتصفح.');
+  build();
+}
+function peaks(b,n=1400){
+  const d=b.getChannelData(0),step=Math.max(1,Math.floor(d.length/n)),p=new Float32Array(n);
+  for(let i=0;i<n;i++){let m=0;for(let j=i*step,e=Math.min(d.length,j+step);j<e;j+=Math.max(1,step>>6)){const v=Math.abs(d[j]);if(v>m)m=v}p[i]=m}
+  return p;
+}
+
+/* ---------- واجهة المقاطع ---------- */
+function build(){
+  stop();const L=$('#list');L.innerHTML='';
+  if(!clips.length)L.innerHTML='<p class="empty">لا توجد مقاطع بعد. أضف ملفًا للبدء.</p>';
+  clips.forEach((c,i)=>{
+    const el=document.createElement('div');el.className='clip';
+    el.innerHTML=`<div class="top"><span class="idx">${i+1}</span><span class="name" title="${c.name.replace(/"/g,'&quot;')}"></span>
+      <button class="ib" data-a="play">تشغيل المحدد</button>
+      <button class="ib" data-a="up" aria-label="أعلى">▲</button><button class="ib" data-a="dn" aria-label="أسفل">▼</button>
+      <button class="ib" data-a="rm" aria-label="حذف">✕</button></div>
+      <canvas></canvas>
+      <div class="meta"><span>من <b class="s"></b></span><span>إلى <b class="e"></b></span><span>المدة <b class="d"></b></span><span class="sp"></span>
+      <button class="ib" data-a="all">تحديد الكل</button></div>`;
+    el.querySelector('.name').textContent=c.name;
+    c.el=el;c.cv=el.querySelector('canvas');c.head=null;
+    el.onclick=ev=>{const a=ev.target.dataset.a;if(!a)return;
+      if(a==='rm')clips.splice(i,1);
+      else if(a==='up'&&i>0)[clips[i-1],clips[i]]=[clips[i],clips[i-1]];
+      else if(a==='dn'&&i<clips.length-1)[clips[i+1],clips[i]]=[clips[i],clips[i+1]];
+      else if(a==='all'){c.start=0;c.end=c.buf.duration;draw(c);totals();return}
+      else if(a==='play'){toggle(c,ev.target);return}
+      build()};
+    bindDrag(c);L.appendChild(el);
+  });
+  requestAnimationFrame(()=>{clips.forEach(draw);totals()});
+}
+function draw(c){
+  const cv=c.cv,dpr=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  if(!w)return;cv.width=w*dpr;cv.height=h*dpr;
+  const g=cv.getContext('2d');g.scale(dpr,dpr);
+  const cs=getComputedStyle(document.documentElement),D=c.buf.duration;
+  const x0=c.start/D*w,x1=c.end/D*w;
+  g.fillStyle=cs.getPropertyValue('--sel');g.fillRect(x0,0,x1-x0,h);
+  g.fillStyle=cs.getPropertyValue('--wave');
+  const P=c.peaks,n=P.length,bw=w/n;
+  for(let i=0;i<n;i++){const a=Math.max(1,P[i]*h*.46);g.fillRect(i*bw,h/2-a,Math.max(1,bw-.3),a*2)}
+  g.fillStyle=cs.getPropertyValue('--cut');
+  g.fillRect(x0-1,0,2,h);g.fillRect(x1-1,0,2,h);
+  g.fillRect(x0-1,0,9,9);g.fillRect(x1-8,h-9,9,9);
+  if(c.head!=null){g.fillStyle=cs.getPropertyValue('--ink');g.fillRect(c.head/D*w-1,0,2,h)}
+  c.el.querySelector('.s').textContent=fmt(c.start);
+  c.el.querySelector('.e').textContent=fmt(c.end);
+  c.el.querySelector('.d').textContent=fmt(c.end-c.start);
+}
+function bindDrag(c){
+  const cv=c.cv;let mode=null,anchor=0;
+  const T=e=>{const r=cv.getBoundingClientRect();return Math.min(c.buf.duration,Math.max(0,(e.clientX-r.left)/r.width*c.buf.duration))};
+  cv.onpointerdown=e=>{
+    const t=T(e),px=c.buf.duration/cv.clientWidth*14;
+    if(Math.abs(t-c.start)<px)mode='s';else if(Math.abs(t-c.end)<px)mode='e';else{mode='n';anchor=t;c.start=c.end=t}
+    cv.setPointerCapture(e.pointerId);
+  };
+  cv.onpointermove=e=>{
+    if(!mode)return;const t=T(e),min=.05;
+    if(mode==='s')c.start=Math.min(t,c.end-min);
+    else if(mode==='e')c.end=Math.max(t,c.start+min);
+    else{c.start=Math.min(anchor,t);c.end=Math.max(anchor,t)}
+    draw(c);totals();
+  };
+  cv.onpointerup=()=>{if(mode==='n'&&c.end-c.start<.05){c.start=0;c.end=c.buf.duration;draw(c);totals()}mode=null};
+}
+function totals(){
+  const gap=+$('#gap').value||0,t=clips.reduce((s,c)=>s+c.end-c.start,0)+gap*Math.max(0,clips.length-1);
+  $('#tot').textContent=clips.length?`المدة الإجمالية: ${fmt(t)} — ${clips.length} مقطع`:'';
+  $('#go').disabled=!clips.length;
+}
+$('#gap').oninput=totals;
+addEventListener('resize',()=>clips.forEach(draw));
+
+/* ---------- المعاينة ---------- */
+function stop(){
+  if(cur){cur.src.onended=null;try{cur.src.stop()}catch(e){}cur.c.head=null;cur.btn.textContent='تشغيل المحدد';if(cur.c.cv.isConnected)draw(cur.c);cur=null}
+  cancelAnimationFrame(raf);
+}
+function toggle(c,btn){
+  const same=cur&&cur.c===c;stop();if(same)return;
+  const a=AC();a.resume();
+  const src=a.createBufferSource();src.buffer=c.buf;src.connect(a.destination);
+  src.start(0,c.start,c.end-c.start);
+  cur={src,c,btn,t0:a.currentTime};btn.textContent='إيقاف';
+  src.onended=()=>{if(cur&&cur.src===src)stop()};
+  (function tick(){if(!cur)return;c.head=Math.min(c.end,c.start+a.currentTime-cur.t0);draw(c);raf=requestAnimationFrame(tick)})();
+}
+
+/* ---------- الدمج والتصدير ---------- */
+async function mix(sr,ch,gap,fade,prog){
+  const parts=[];let total=0;
+  for(let i=0;i<clips.length;i++){
+    const c=clips[i],d=c.end-c.start;
+    const o=new OfflineAudioContext(ch,Math.max(1,Math.round(d*sr)),sr);
+    const s=o.createBufferSource(),g=o.createGain();s.buffer=c.buf;s.connect(g);g.connect(o.destination);
+    if(fade){const f=Math.min(.05,d/2);g.gain.setValueAtTime(0,0);g.gain.linearRampToValueAtTime(1,f);g.gain.setValueAtTime(1,d-f);g.gain.linearRampToValueAtTime(0,d)}
+    s.start(0,c.start,d);
+    const r=await o.startRendering();parts.push(r);total+=r.length;
+    prog((i+1)/clips.length*.4);
+  }
+  const gs=Math.round(gap*sr);total+=gs*(parts.length-1);
+  const out=Array.from({length:ch},()=>new Float32Array(total));let off=0;
+  parts.forEach(p=>{for(let k=0;k<ch;k++)out[k].set(p.getChannelData(k),off);off+=p.length+gs});
+  return out;
+}
+const i16=f=>{const o=new Int16Array(f.length);for(let i=0;i<f.length;i++){const v=Math.max(-1,Math.min(1,f[i]));o[i]=v<0?v*32768:v*32767}return o};
+async function toMp3(chs,sr,kbps,prog){
+  if(typeof lamejs==='undefined')throw new Error('تعذّر تحميل مكتبة MP3 — تأكد من اتصال الإنترنت.');
+  const enc=new lamejs.Mp3Encoder(chs.length,sr,kbps),L=i16(chs[0]),R=chs[1]?i16(chs[1]):null,out=[],B=1152*10;
+  for(let i=0,n=0;i<L.length;i+=B,n++){
+    const b=R?enc.encodeBuffer(L.subarray(i,i+B),R.subarray(i,i+B)):enc.encodeBuffer(L.subarray(i,i+B));
+    if(b.length)out.push(b);
+    if(n%15===0){prog(.4+.6*i/L.length);await new Promise(r=>setTimeout(r))}
+  }
+  const e=enc.flush();if(e.length)out.push(e);
+  return new Blob(out,{type:'audio/mpeg'});
+}
+function toWav(chs,sr){
+  const ch=chs.length,n=chs[0].length,buf=new ArrayBuffer(44+n*ch*2),v=new DataView(buf);
+  const w=(o,s)=>[...s].forEach((x,i)=>v.setUint8(o+i,x.charCodeAt(0)));
+  w(0,'RIFF');v.setUint32(4,36+n*ch*2,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*ch*2,true);v.setUint16(32,ch*2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*ch*2,true);
+  let o=44;for(let i=0;i<n;i++)for(let k=0;k<ch;k++){const s=Math.max(-1,Math.min(1,chs[k][i]));v.setInt16(o,s<0?s*32768:s*32767,true);o+=2}
+  return new Blob([buf],{type:'audio/wav'});
+}
+let lastUrl;
+$('#go').onclick=async()=>{
+  stop();err();const btn=$('#go'),bar=$('#bar'),fill=$('#fill');
+  btn.disabled=true;bar.style.display='block';$('#res').style.display='none';
+  const prog=p=>fill.style.width=Math.round(p*100)+'%';prog(0);
+  try{
+    const sr=+$('#sr').value,ch=+$('#ch').value,f=$('#fmt').value;
+    const chs=await mix(sr,ch,Math.max(0,+$('#gap').value||0),$('#fade').checked,prog);
+    const blob=f==='mp3'?await toMp3(chs,sr,+$('#kbps').value,prog):toWav(chs,sr);
+    prog(1);
+    if(lastUrl)URL.revokeObjectURL(lastUrl);lastUrl=URL.createObjectURL(blob);
+    $('#pl').src=lastUrl;
+    const name=($('#fname').value.trim()||'merged').replace(/[\\/:*?"<>|]/g,'_');
+    $('#dl').href=lastUrl;$('#dl').download=name+'.'+f;
+    $('#dl').textContent=`تحميل ${name}.${f} (${(blob.size/1048576).toFixed(2)} MB)`;
+    $('#res').style.display='block';
+  }catch(e){err('حدث خطأ أثناء التصدير: '+e.message)}
+  btn.disabled=!clips.length;setTimeout(()=>bar.style.display='none',600);
+};
+build();
+<\/script>
 </body>
-
 </html>
+</script>
+<script type="text/plain" id="tpl-v"><!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>استوديو الفيديو — مونتاج داخل المتصفح</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#111317;--p:#1a1d23;--l:#2b3039;--ink:#eceef2;--m:#8f96a3;--a:#ff6a4d;--clip:#2f6f78;--sel:#ffd166}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.5 "IBM Plex Sans Arabic",system-ui,sans-serif;padding:14px}
+header{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+h1{font-size:22px;margin:0}header span{color:var(--m)}
+.top{display:grid;grid-template-columns:260px 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:800px){.top{grid-template-columns:1fr}}
+.box{background:var(--p);border:1px solid var(--l);border-radius:12px;padding:12px}
+button,select{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--l);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--m)}button:disabled{opacity:.45;cursor:default}
+button:focus-visible,select:focus-visible,.drop:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.pri{background:var(--a);border-color:var(--a);color:#fff;font-weight:700}
+.drop{border:2px dashed var(--l);border-radius:10px;padding:14px;text-align:center;cursor:pointer;color:var(--m)}
+.drop.on,.drop:hover{border-color:var(--a)}
+.drop b{color:var(--ink)}
+#bin{display:grid;gap:8px;max-height:340px;overflow:auto;margin-top:10px}
+.item{display:flex;gap:8px;align-items:center;background:var(--bg);border-radius:8px;padding:6px}
+.item img{width:64px;height:36px;object-fit:cover;border-radius:4px;background:#000}
+.item div{flex:1;min-width:0}
+.item b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;font-size:13px}
+.item small{color:var(--m)}
+.stage{position:relative;background:#000;border-radius:10px;overflow:hidden}
+#cv{display:block;width:100%;height:auto;max-height:52vh;object-fit:contain;background:#000}
+.ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--m);text-align:center;padding:12px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 0}
+.time{font-variant-numeric:tabular-nums;direction:ltr;color:var(--m);margin-inline-start:auto}
+#wrap{overflow-x:auto;direction:ltr;position:relative;border-radius:8px;background:var(--bg);border:1px solid var(--l);margin-top:10px}
+#tl{position:relative;height:122px;min-width:100%}
+#ruler{height:28px;border-bottom:1px solid var(--l);position:relative;cursor:pointer;touch-action:none}
+.tick{position:absolute;top:0;height:100%;border-left:1px solid var(--l);padding-left:4px;font-size:11px;color:var(--m);pointer-events:none}
+#track{position:relative;height:84px;margin-top:6px}
+.clip{position:absolute;top:0;height:100%;border-radius:6px;background:var(--clip) repeat-x left/auto 100%;overflow:hidden;border:2px solid transparent;cursor:pointer;box-shadow:inset 0 0 0 100vmax rgba(0,0,0,.4);touch-action:none}
+.clip.sel{border-color:var(--sel)}
+.clip span{position:absolute;left:14px;bottom:4px;font-size:11px;text-shadow:0 1px 2px #000;white-space:nowrap;pointer-events:none}
+.h{position:absolute;top:0;width:10px;height:100%;background:var(--sel);opacity:0;cursor:ew-resize}
+.clip:hover .h,.clip.sel .h{opacity:.9}
+.h.l{left:0}.h.r{right:0}
+#head{position:absolute;top:0;bottom:0;width:2px;background:var(--a);pointer-events:none;z-index:5}
+#head:before{content:"";position:absolute;top:0;left:-5px;border:6px solid transparent;border-top-color:var(--a)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hint{color:var(--m);font-size:12px;margin:8px 0 0}
+.msg{color:var(--a);min-height:1.2em;margin:8px 0 0}
+#res{display:none;margin-top:12px}
+#res video{width:100%;max-height:300px;background:#000;border-radius:8px}
+#res a{display:inline-block;margin-top:8px;background:#2e9d6a;color:#fff;text-decoration:none;padding:8px 18px;border-radius:8px;font-weight:700}
+input[type=range]{accent-color:var(--a)}
+</style>
+</head>
+<body>
+<header><h1>استوديو الفيديو</h1><span>قص، تقسيم، ترتيب، وتصدير — كله داخل المتصفح</span></header>
 
+<div class="top">
+  <div class="box">
+    <div class="drop" id="drop" tabindex="0" role="button"><b>أضف فيديوهات</b><br>اسحب الملفات أو اضغط للاختيار<input type="file" id="file" accept="video/*" multiple hidden></div>
+    <div id="bin"></div>
+  </div>
+  <div class="box">
+    <div class="stage"><canvas id="cv" width="1280" height="720"></canvas><div class="ph" id="ph">أضف مقطعًا إلى التايم لاين لبدء المعاينة</div></div>
+    <div class="bar"><button id="play" class="pri">▶ تشغيل</button><span class="time" id="time">0:00.0 / 0:00.0</span></div>
+  </div>
+</div>
+
+<div class="box">
+  <div class="row">
+    <button id="split">✂ تقسيم عند المؤشر (S)</button>
+    <button id="del">حذف المحدد (Delete)</button>
+    <button id="mute">كتم / تشغيل صوت المقطع</button>
+    <button id="bk">◀ تقديم</button><button id="fw">تأخير ▶</button>
+    <label class="row" style="margin-inline-start:auto">تكبير <input type="range" id="zoom" min="10" max="240" value="60"></label>
+  </div>
+  <div id="wrap"><div id="tl"><div id="ruler"></div><div id="track"></div><div id="head"></div></div></div>
+  <p class="hint">اضغط على الشريط العلوي للتنقل. اسحب الحافة الصفراء لأي مقطع لقصّ بدايته أو نهايته. التقديم والتأخير يغيّران ترتيب المقطع المحدد.</p>
+  <p class="msg" id="err"></p>
+</div>
+
+<div class="box" style="margin-top:12px">
+  <div class="row">
+    <label class="row">الدقة
+      <select id="res"><option value="native">الدقة الأصلية للفيديو</option><option value="3840x2160">4K</option><option value="1920x1080">1080p</option><option value="1280x720">720p</option><option value="854x480">480p</option></select>
+    </label>
+    <label class="row">الجودة
+      <select id="q"><option value="25">عالية (25 Mbps)</option><option value="60" selected>عالية جدًا (60 Mbps)</option><option value="120">قصوى (120 Mbps)</option></select>
+    </label>
+    <label class="row">الإطارات
+      <select id="fps"><option value="24">24</option><option value="30" selected>30</option><option value="60">60</option></select>
+    </label>
+    <button id="go" class="pri" disabled>تصدير الفيديو</button>
+    <span id="xmsg" style="color:var(--m)"></span>
+  </div>
+  <p class="hint">التصدير يتم بالزمن الحقيقي (مدة التصدير = مدة الفيديو). أبقِ التبويب ظاهرًا حتى ينتهي.</p>
+  <div id="out"><div id="res2"></div></div>
+  <div id="result" style="display:none;margin-top:12px"><video id="rv" controls></video><br><a id="dl" style="display:inline-block;margin-top:8px;background:#2e9d6a;color:#fff;text-decoration:none;padding:8px 18px;border-radius:8px;font-weight:700">تحميل</a></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const cv=$('#cv'),g=cv.getContext('2d');
+let AC,master,spk,dest,media=[],clips=[],sel=null,t=0,playing=false,exporting=false,act=null,actStart=0,pps=60,uid=0,rec,chunks;
+const fmt=x=>{x=Math.max(0,x);return Math.floor(x/60)+':'+(x%60).toFixed(1).padStart(4,'0')};
+const total=()=>clips.reduce((s,c)=>s+c.out-c.in,0);
+const startOf=c=>{let a=0;for(const k of clips){if(k===c)break;a+=k.out-k.in}return a};
+const err=m=>$('#err').textContent=m||'';
+function audio(){
+  if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();dest=AC.createMediaStreamDestination();spk=AC.createGain();master.connect(dest);master.connect(spk);spk.connect(AC.destination)}
+  AC.resume();
+}
+
+/* ---------- استيراد ---------- */
+const drop=$('#drop'),fi=$('#file');
+drop.onclick=()=>fi.click();
+drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fi.click()}};
+fi.onchange=()=>{imp([...fi.files]);fi.value=''};
+['dragenter','dragover'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.add('on')}));
+['dragleave','drop'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.remove('on')}));
+drop.addEventListener('drop',e=>imp([...e.dataTransfer.files]));
+async function imp(files){
+  err();const bad=[];
+  for(const f of files){try{await load(f)}catch(e){bad.push(f.name)}}
+  if(bad.length)err('تعذّر قراءة: '+bad.join('، ')+' — الصيغة أو الكودك غير مدعوم في هذا المتصفح.');
+  bin();
+}
+async function load(f){
+  audio();
+  const v=document.createElement('video');v.src=URL.createObjectURL(f);v.preload='auto';v.playsInline=true;
+  await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=no});
+  const m={name:f.name,v,dur:v.duration,thumb:''};
+  AC.createMediaElementSource(v).connect(master);
+  const sk=new Promise(r=>v.onseeked=r);v.currentTime=Math.min(.5,v.duration/2);await sk;
+  const c=document.createElement('canvas');c.width=160;c.height=90;c.getContext('2d').drawImage(v,0,0,160,90);
+  m.thumb=c.toDataURL('image/jpeg',.6);media.push(m);
+}
+function bin(){
+  const B=$('#bin');B.innerHTML='';
+  media.forEach(m=>{
+    const e=document.createElement('div');e.className='item';
+    e.innerHTML='<img alt=""><div><b></b><small></small></div><button>+ أضف</button>';
+    e.querySelector('img').src=m.thumb;e.querySelector('b').textContent=m.name;e.querySelector('small').textContent=fmt(m.dur);
+    e.querySelector('button').onclick=()=>{
+      const c={id:++uid,m,in:0,out:m.dur,mute:false};clips.push(c);sel=c.id;build();
+      if(clips.length===1)setT(0);
+    };
+    B.appendChild(e);
+  });
+}
+
+/* ---------- المحرك ---------- */
+function place(tt,play){
+  let a=0,hit=null;
+  for(const c of clips){const d=c.out-c.in;if(tt<a+d||c===clips[clips.length-1]){hit=c;break}a+=d}
+  if(!hit){if(act)act.m.v.pause();act=null;return}
+  if(act&&act.m!==hit.m)act.m.v.pause();
+  act=hit;actStart=a;
+  const v=hit.m.v,l=Math.min(hit.out,hit.in+Math.max(0,tt-a));
+  v.muted=hit.mute;
+  if(!play||Math.abs(v.currentTime-l)>.2)v.currentTime=l;
+  if(play)v.play().catch(()=>{});else v.pause();
+}
+function setT(x){t=Math.min(Math.max(0,x),total());place(t,playing);head()}
+function stopPlay(){
+  playing=false;if(act)act.m.v.pause();$('#play').textContent='▶ تشغيل';
+  if(exporting&&rec&&rec.state==='recording')setTimeout(()=>rec.stop(),300);
+}
+function toggle(){
+  if(!clips.length||exporting)return;
+  if(playing){stopPlay();return}
+  audio();if(t>=total()-.05)t=0;
+  playing=true;$('#play').textContent='⏸ إيقاف';place(t,true);
+}
+function loop(){
+  if(playing&&act){
+    const v=act.m.v;
+    if(v.currentTime>=act.out-.04||v.ended){
+      const nx=actStart+act.out-act.in;
+      if(nx>=total()-.05){t=total();stopPlay()}else{t=nx;place(t,true)}
+    }else t=actStart+Math.max(0,v.currentTime-act.in);
+  }
+  draw();head();requestAnimationFrame(loop);
+}
+function draw(){
+  const W=cv.width,H=cv.height;g.fillStyle='#000';g.fillRect(0,0,W,H);
+  if(act&&act.m.v.readyState>1){
+    const v=act.m.v,s=Math.min(W/v.videoWidth,H/v.videoHeight),w=v.videoWidth*s,h=v.videoHeight*s;
+    g.drawImage(v,(W-w)/2,(H-h)/2,w,h);
+  }
+}
+function head(){
+  const x=t*pps;$('#head').style.left=x+'px';
+  $('#time').textContent=fmt(t)+' / '+fmt(total());
+  const w=$('#wrap');if(playing&&(x>w.scrollLeft+w.clientWidth-30||x<w.scrollLeft))w.scrollLeft=Math.max(0,x-40);
+  if(exporting)$('#xmsg').textContent='جارٍ التصدير… '+Math.round(t/Math.max(.1,total())*100)+'%';
+}
+
+/* ---------- التايم لاين ---------- */
+const seekEv=e=>setT((e.clientX-$('#tl').getBoundingClientRect().left)/pps);
+function select(id){sel=id;clips.forEach(c=>c.e&&c.e.classList.toggle('sel',c.id===id))}
+function build(){
+  const tr=$('#track');tr.innerHTML='';
+  clips.forEach(c=>{
+    const e=document.createElement('div');e.className='clip'+(c.id===sel?' sel':'');
+    e.style.backgroundImage='url('+c.m.thumb+')';c.e=e;
+    e.innerHTML='<i class="h l"></i><span></span><i class="h r"></i>';
+    e.querySelector('span').textContent=c.m.name+(c.mute?'  🔇':'');
+    e.onpointerdown=ev=>{
+      if(ev.target.classList.contains('h'))return trim(ev,c,ev.target.classList.contains('l'));
+      select(c.id);seekEv(ev);
+    };
+    tr.appendChild(e);
+  });
+  applyRes();layout();
+}
+function layout(){
+  let a=0;clips.forEach(c=>{const d=c.out-c.in;c.e.style.left=a*pps+'px';c.e.style.width=d*pps+'px';a+=d});
+  const W=Math.max(a*pps+120,$('#wrap').clientWidth);$('#tl').style.width=W+'px';
+  const st=[1,2,5,10,30,60,120].find(s=>s*pps>=70)||300;let h='';
+  for(let s=0;s*pps<W;s+=st)h+='<div class="tick" style="left:'+s*pps+'px">'+fmt(s).slice(0,-2)+'</div>';
+  $('#ruler').innerHTML=h;
+  $('#go').disabled=!clips.length;$('#ph').style.display=clips.length?'none':'grid';head();
+}
+function trim(ev,c,left){
+  ev.preventDefault();ev.stopPropagation();stopPlay();select(c.id);
+  const h=ev.target,x0=ev.clientX,i0=c.in,o0=c.out;h.setPointerCapture(ev.pointerId);
+  h.onpointermove=e=>{
+    const d=(e.clientX-x0)/pps;
+    if(left)c.in=Math.min(Math.max(0,i0+d),c.out-.1);else c.out=Math.max(Math.min(c.m.dur,o0+d),c.in+.1);
+    layout();const a=startOf(c);t=left?a:a+(c.out-c.in)-.05;place(t,false);head();
+  };
+  h.onpointerup=()=>{h.onpointermove=h.onpointerup=null};
+}
+const R=$('#ruler');
+R.onpointerdown=e=>{R.setPointerCapture(e.pointerId);seekEv(e);R.onpointermove=seekEv};
+R.onpointerup=()=>R.onpointermove=null;
+$('#zoom').oninput=e=>{pps=+e.target.value;layout()};
+
+/* ---------- أدوات التحرير ---------- */
+function split(){
+  let a=0;
+  for(const c of clips){
+    const d=c.out-c.in,l=c.in+(t-a);
+    if(t>a&&t<a+d&&l-c.in>.1&&c.out-l>.1){
+      const b={...c,id:++uid,in:l};c.out=l;clips.splice(clips.indexOf(c)+1,0,b);sel=b.id;build();return;
+    }
+    a+=d;
+  }
+}
+function del(){
+  if(sel==null)return;stopPlay();
+  clips=clips.filter(c=>c.id!==sel);sel=null;act=null;build();setT(t);
+}
+function move(dir){
+  const i=clips.findIndex(c=>c.id===sel),j=i+dir;
+  if(i<0||j<0||j>=clips.length)return;
+  [clips[i],clips[j]]=[clips[j],clips[i]];build();setT(startOf(clips[j]));
+}
+function mute(){
+  const c=clips.find(k=>k.id===sel);if(!c)return;
+  c.mute=!c.mute;build();if(act===c)c.m.v.muted=c.mute;
+}
+$('#play').onclick=toggle;$('#split').onclick=split;$('#del').onclick=del;
+$('#mute').onclick=mute;$('#bk').onclick=()=>move(-1);$('#fw').onclick=()=>move(1);
+addEventListener('keydown',e=>{
+  if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.code==='Space'){e.preventDefault();toggle()}
+  else if(e.key==='s'||e.key==='S')split();
+  else if(e.key==='Delete'||e.key==='Backspace')del();
+});
+function applyRes(){
+  const v=$('#res').value;let w=1280,h=720;
+  if(v==='native'){
+    let best=0;
+    clips.forEach(c=>{const a=c.m.v.videoWidth*c.m.v.videoHeight;if(a>best){best=a;w=c.m.v.videoWidth;h=c.m.v.videoHeight}});
+  }else[w,h]=v.split('x').map(Number);
+  w&=~1;h&=~1;
+  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}
+}
+$('#res').onchange=applyRes;
+addEventListener('resize',layout);
+
+/* ---------- التصدير ---------- */
+const MT=window.MediaRecorder&&['video/mp4;codecs=avc1,mp4a.40.2','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(x=>MediaRecorder.isTypeSupported(x));
+let lastUrl;
+$('#go').onclick=()=>{
+  if(!clips.length||exporting)return;
+  if(!MT){err('هذا المتصفح لا يدعم تسجيل الفيديو. استخدم Chrome أو Edge.');return}
+  err();stopPlay();audio();$('#result').style.display='none';
+  applyRes();
+  const stream=cv.captureStream(+$('#fps').value);
+  dest.stream.getAudioTracks().forEach(k=>stream.addTrack(k));
+  chunks=[];rec=new MediaRecorder(stream,{mimeType:MT,videoBitsPerSecond:+$('#q').value*1e6,audioBitsPerSecond:320000});
+  rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  rec.onstop=()=>{
+    exporting=false;spk.gain.value=1;$('#go').disabled=false;$('#xmsg').textContent='';
+    const b=new Blob(chunks,{type:MT.split(';')[0]}),ext=MT.includes('mp4')?'mp4':'webm';
+    if(lastUrl)URL.revokeObjectURL(lastUrl);lastUrl=URL.createObjectURL(b);
+    $('#rv').src=lastUrl;$('#dl').href=lastUrl;$('#dl').download='video.'+ext;
+    $('#dl').textContent='تحميل video.'+ext+' ('+(b.size/1048576).toFixed(1)+' MB)';
+    $('#result').style.display='block';
+  };
+  exporting=true;spk.gain.value=0;$('#go').disabled=true;
+  rec.start(250);t=0;playing=true;$('#play').textContent='⏸ إيقاف';place(0,true);
+};
+
+build();loop();
+<\/script>
+</body>
+</html>
+</script>
+<script>
+const loaded={};
+function show(k){
+  for(const x of ['a','v']){
+    const f=document.getElementById('f-'+x),on=x===k;
+    f.hidden=!on;
+    document.getElementById('t-'+x).setAttribute('aria-selected',on);
+    if(on&&!loaded[x]){
+      loaded[x]=1;
+      f.srcdoc=document.getElementById('tpl-'+x).textContent.replace(/<\\\/script/g,'</script');
+    }
+  }
+  history.replaceState(null,'','#'+k);
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.k));
+show(location.hash==='#v'?'v':'a');
+</script>
+</body>
+</html>
