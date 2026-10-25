@@ -369,34 +369,95 @@ textarea,input[type=number]{font:inherit;color:inherit;background:var(--p);borde
 #res video{width:100%;max-height:300px;background:#000;border-radius:8px}
 #res a{display:inline-block;margin-top:8px;background:#2e9d6a;color:#fff;text-decoration:none;padding:8px 18px;border-radius:8px;font-weight:700}
 input[type=range]{accent-color:var(--a)}
+
+/* ===== v3: واجهة احترافية ===== */
+:root{--p2:#1e222a}
+[hidden]{display:none!important}
+body{padding:0;display:flex;flex-direction:column;height:100vh;overflow:hidden;font-size:13px}
+button,select{background:var(--p2);border:1px solid var(--l);border-radius:8px;padding:6px 10px;font:inherit;color:inherit;cursor:pointer}
+select{max-width:100%}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ib{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border-radius:8px;position:relative;background:transparent;border:1px solid transparent;color:var(--ink);cursor:pointer}
+.ib:hover{background:var(--p2);border-color:var(--l)}
+.ib.dng:hover{color:#ff6a6a}
+label.ib:has(input:checked){background:rgba(255,106,77,.18);color:var(--a);border-color:rgba(255,106,77,.45)}
+button.ib.pri{background:var(--a);color:#fff;border-color:var(--a)}
+.ib.big{width:44px;height:44px;border-radius:50%}
+[data-tip]{position:relative}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#000;color:#fff;border:1px solid var(--l);padding:4px 9px;border-radius:6px;font-size:12px;font-weight:400;white-space:nowrap;z-index:100;pointer-events:none}
+.tools>[data-tip]:nth-child(-n+5):hover::after,header>[data-tip]:nth-child(-n+4):hover::after{left:auto;right:0;transform:none}
+.zoomw[data-tip]:hover::after{left:0;transform:none}
+.sep{width:1px;height:22px;background:var(--l);margin:0 6px;flex:none}
+.sp{flex:1}
+header.app{display:flex;align-items:center;gap:4px;padding:8px 12px;background:var(--p);border-bottom:1px solid var(--l);flex:none;margin:0}
+.brand{font-weight:700;font-size:15px;margin-inline-end:12px}
+.sav{color:var(--m);font-size:12px;margin-inline-start:8px}
+.work{flex:1;min-height:0;display:grid;grid-template-columns:250px minmax(0,1fr) 300px;gap:10px;padding:10px 10px 0}
+.panel{background:var(--p);border:1px solid var(--l);border-radius:12px;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.ph2{padding:9px 12px;font-weight:700;color:var(--m);font-size:12px;border-bottom:1px solid var(--l)}
+.panel .body{padding:10px;overflow:auto;flex:1;min-height:0}
+.mid{display:flex;flex-direction:column;min-height:0}
+.stage{flex:1;min-height:0;position:relative;background:#000;border-radius:12px 12px 0 0;overflow:hidden;border:1px solid var(--l);border-bottom:0}
+#cv{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;max-height:none}
+.transport{display:flex;align-items:center;justify-content:center;gap:14px;padding:8px;background:var(--p);border:1px solid var(--l);border-radius:0 0 12px 12px}
+.time{margin:0}
+#bin{max-height:none;margin-top:10px}
+.drop b{color:var(--ink)}
+.item .ib{width:30px;height:30px}
+.tlbox{flex:none;height:min(40vh,360px);margin:10px;display:flex;flex-direction:column;background:var(--p);border:1px solid var(--l);border-radius:12px;min-height:0}
+.tools{display:flex;align-items:center;flex-wrap:wrap;gap:2px;padding:6px 8px;border-bottom:1px solid var(--l);flex:none}
+#wrap{flex:1;min-height:0;margin:0;border:0;border-radius:0 0 12px 12px;overflow:auto}
+#ruler{position:sticky;top:0;z-index:6;background:var(--p)}
+#head{z-index:7}
+.zoomw{display:flex;align-items:center;gap:6px;color:var(--m);position:relative}
+.zoomw input{width:120px}
+.insp .body>div[id]{margin-bottom:10px;padding:10px;background:var(--p2);border:1px solid var(--l);border-radius:10px}
+.insp h4{margin:0 0 8px;font-size:12px;color:var(--m)}
+.insp .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0}
+.insp label.row{display:flex;justify-content:space-between;width:100%;gap:10px}
+.insp label.row:has(input[type=checkbox]){justify-content:flex-start;width:auto}
+.insp label.row input[type=range]{flex:1;max-width:62%}
+.insp .row>b{width:100%;font-size:11px;color:var(--m);margin-top:6px}
+.insp select,.insp textarea{width:100%}
+.insp textarea{min-height:56px;resize:vertical;flex:1 1 100%}
+.insp input[type=color]{width:44px;height:30px;padding:0;border:1px solid var(--l);border-radius:6px;background:none}
+.insp input[type=number]{width:76px}
+.hintp{color:var(--m);padding:6px 2px;margin:0}
+.pop{position:fixed;top:56px;left:12px;width:310px;background:var(--p);border:1px solid var(--l);border-radius:12px;padding:12px;z-index:60;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.fr{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.fr select{width:62%}
+.pop video{width:100%;max-height:200px;background:#000;border-radius:8px;margin-top:8px}
+#dl{display:inline-block;margin-top:8px;background:#2e9d6a;color:#fff;text-decoration:none;padding:8px 16px;border-radius:8px;font-weight:700}
+.toast,.banner{position:fixed;left:50%;transform:translateX(-50%);z-index:80;border-radius:10px;padding:8px 14px}
+.toast{bottom:16px;background:#3a1d18;border:1px solid var(--a);max-width:80vw}
+.toast:empty{display:none}
+.banner{top:56px;background:var(--p2);border:1px solid var(--l);display:flex;gap:10px;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+@media(max-width:1000px){body{height:auto;overflow:auto}.work{grid-template-columns:1fr;flex:none}.stage{height:46vh;flex:none}.tlbox{height:360px}}
 </style>
 </head>
 <body>
-<header><h1>استوديو الفيديو</h1><span>قص، تقسيم، ترتيب، وتصدير — كله داخل المتصفح</span></header>
-
-<div class="top">
-  <div class="box">
-    <div class="drop" id="drop" tabindex="0" role="button"><b>أضف فيديوهات</b><br>اسحب الملفات أو اضغط للاختيار<input type="file" id="file" accept="video/*" multiple hidden></div>
+<header class="app">
+  <span class="brand">استوديو الفيديو</span>
+  <button class="ib" id="bnew" data-ic="file" data-tip="مشروع جديد"></button>
+  <button class="ib" id="bundo" data-ic="undo" data-tip="تراجع (Ctrl+Z)"></button>
+  <button class="ib" id="bredo" data-ic="redo" data-tip="إعادة (Ctrl+Y)"></button>
+  <span class="sav" id="sav"></span>
+  <span class="sp"></span>
+  <label class="fr" style="margin:0;gap:6px" data-tip="نسبة أبعاد الفيديو">النسبة <select id="asp"><option value="auto">كما هي</option><option value="16:9">16:9</option><option value="9:16">9:16 (ريلز)</option><option value="1:1">1:1</option><option value="4:5">4:5</option><option value="4:3">4:3</option></select></label>
+  <button class="pri" id="bexp" style="display:flex;gap:6px;align-items:center;margin-inline-start:8px"><span data-ic="download"></span>تصدير</button>
+</header>
+<div class="work">
+  <aside class="panel lib"><div class="ph2">المكتبة</div><div class="body">
+    <div class="drop" id="drop" tabindex="0" role="button"><b>+ إضافة فيديو</b><br><small>اسحب الملفات هنا أو اضغط للاختيار</small><input type="file" id="file" accept="video/*" multiple hidden></div>
     <div id="bin"></div>
-  </div>
-  <div class="box">
+  </div></aside>
+  <section class="mid">
     <div class="stage"><canvas id="cv" width="1280" height="720"></canvas><div class="ph" id="ph">أضف مقطعًا إلى التايم لاين لبدء المعاينة</div></div>
-    <div class="bar"><button id="play" class="pri">▶ تشغيل</button>
-      <label class="row" style="gap:6px">النسبة <select id="asp"><option value="auto">كما هي</option><option value="16:9">16:9</option><option value="9:16">9:16 (ريلز)</option><option value="1:1">1:1</option><option value="4:5">4:5</option><option value="4:3">4:3</option></select></label>
-      <span class="time" id="time">0:00.0 / 0:00.0</span></div>
-  </div>
-</div>
-
-<div class="box">
-  <div class="row">
-    <button id="bundo">↶ تراجع</button><button id="bredo">↷ إعادة</button>
-    <button id="split">✂ تقسيم عند المؤشر (S)</button>
-    <button id="bdup">⧉ نسخ</button><button id="bdet">فصل الصوت</button>
-    <label class="row"><input type="checkbox" id="msnap" checked> مغناطيس</label>
-    <button id="del">حذف المحدد (Delete)</button>
-    <button id="mute">كتم / تشغيل صوت المقطع</button>
-    <button id="bk">◀ تقديم</button><button id="fw">تأخير ▶</button>
-    <div id="cprops" style="display:none;flex:1 1 360px;padding:8px 10px;background:var(--bg);border:1px solid var(--l);border-radius:8px">
+    <div class="transport"><button class="ib big pri" id="play" data-ic="play" data-tip="تشغيل / إيقاف (Space)"></button><span class="time" id="time">0:00.0 / 0:00.0</span></div>
+  </section>
+  <aside class="panel insp"><div class="ph2">الخصائص</div><div class="body">
+    <p id="nosel" class="hintp">حدّد مقطعًا أو طبقة من التايم لاين لتظهر خصائصه هنا.</p>
+    <div id="cprops" style="display:none"><h4>المقطع</h4>
       <div class="row">
         <label class="row">السرعة <input type="range" id="csp" min="0.25" max="4" step="0.05"><b id="cspv" style="min-width:48px;direction:ltr">1x</b></label>
         <label class="row">الصوت <input type="range" id="cvol" min="0" max="100"></label>
@@ -406,7 +467,7 @@ input[type=range]{accent-color:var(--a)}
         <label class="row">مدته <input type="number" id="ctd" min="0.1" step="0.1" style="width:64px"></label>
       </div>
     </div>
-    <div id="props" style="display:none;flex:1 1 360px;padding:8px 10px;background:var(--bg);border:1px solid var(--l);border-radius:8px">
+    <div id="props" style="display:none"><h4>الطبقة</h4>
     <div class="row" id="pt" style="margin-bottom:8px">
       <textarea id="ptxt" rows="2" dir="auto" placeholder="اكتب النص هنا (يدعم العربية)" style="flex:1;min-width:200px"></textarea>
       <select id="pfont"><option>IBM Plex Sans Arabic</option><option>Cairo</option><option>Tajawal</option><option>Amiri</option><option>Arial</option></select>
@@ -430,12 +491,10 @@ input[type=range]{accent-color:var(--a)}
       <label class="row vis">مدتها <input type="number" id="pad" min="0.1" step="0.1" style="width:64px"></label>
       <label class="row" id="pvl">الصوت <input type="range" id="pvol" min="0" max="100"></label>
       <label class="row" id="pml"><input type="checkbox" id="pmute"> كتم الصوت</label>
-      <button id="pdel">حذف الطبقة</button>
+      <button id="pdel" class="ib dng" data-ic="trash" data-tip="حذف الطبقة"></button>
     </div>
-      </div>
-    <label class="row" style="margin-inline-start:auto">تكبير <input type="range" id="zoom" min="10" max="240" value="60"></label>
-  </div>
-  <div id="fx" style="display:none;margin-top:10px;padding:8px 10px;background:var(--bg);border:1px solid var(--l);border-radius:8px">
+      <button id="psub" style="display:none;margin-top:8px;width:100%">تطبيق هذا النمط على كل الترجمات</button></div>
+    <div id="fx" style="display:none"><h4>المظهر</h4>
     <div class="row fxv">
       <b>الألوان</b>
       <select id="fpre"><option value="">فلتر جاهز…</option><option value="none">بدون</option><option value="bw">أبيض وأسود</option><option value="sepia">سيبيا</option><option value="warm">دافئ</option><option value="cool">بارد</option><option value="vivid">حيوي</option><option value="vintage">قديم</option><option value="dark">داكن</option></select>
@@ -448,11 +507,11 @@ input[type=range]{accent-color:var(--a)}
     <div class="row" style="margin-top:6px">
       <b>التحويل</b>
       <label class="row">تدوير <input type="range" id="frot" min="-180" max="180"></label>
-      <button id="frot90">↻ 90°</button>
+      <button id="frot90" class="ib" data-ic="rot" data-tip="تدوير 90°"></button>
       <label class="row fxv"><input type="checkbox" id="ffh"> قلب أفقي</label>
       <label class="row fxv"><input type="checkbox" id="ffv"> قلب رأسي</label>
       <label class="row fxm"><input type="checkbox" id="ffill"> ملء الإطار</label>
-      <button id="freset">إعادة ضبط المظهر</button>
+      <button id="freset" class="ib" data-ic="reset" data-tip="إعادة ضبط المظهر"></button>
     </div>
     <div class="row fxv" style="margin-top:6px">
       <b>القص %</b>
@@ -462,38 +521,43 @@ input[type=range]{accent-color:var(--a)}
       <label class="row">أسفل <input type="range" id="fcb" min="0" max="45"></label>
     </div>
   </div>
-  <div class="row" style="margin-top:10px">
-    <button id="addt">T + نص</button>
-    <button id="addi">🖼 + صورة / لوجو</button><input type="file" id="imgf" accept="image/*" multiple hidden>
-    <button id="badda">🎵 + صوت / موسيقى</button><input type="file" id="audf" accept="audio/*" multiple hidden>
-    <button id="addl">＋ طبقة</button>
-    <span style="color:var(--m);font-size:12px">فيديو فوق الفيديو: زر «+ فوق الفيديو» في مكتبة الملفات. الطبقات الأعلى تظهر فوق الأدنى.</span>
+  </div></aside>
+</div>
+<section class="tlbox">
+  <div class="tools">
+    <button class="ib" id="split" data-ic="cut" data-tip="تقسيم عند المؤشر (S)"></button>
+    <button class="ib" id="bdup" data-ic="copy" data-tip="نسخ المحدد"></button>
+    <button class="ib dng" id="del" data-ic="trash" data-tip="حذف المحدد (Delete)"></button>
+    <span class="sep"></span>
+    <button class="ib" id="bk" data-ic="left" data-tip="تقديم المقطع في الترتيب"></button>
+    <button class="ib" id="fw" data-ic="right" data-tip="تأخير المقطع في الترتيب"></button>
+    <button class="ib" id="mute" data-ic="mute" data-tip="كتم / تشغيل صوت المقطع"></button>
+    <button class="ib" id="bdet" data-ic="wave" data-tip="فصل الصوت إلى طبقة مستقلة"></button>
+    <span class="sep"></span>
+    <button class="ib" id="addt" data-ic="type" data-tip="إضافة نص"></button>
+    <button class="ib" id="addi" data-ic="image" data-tip="إضافة صورة / لوجو"></button><input type="file" id="imgf" accept="image/*" multiple hidden>
+    <button class="ib" id="badda" data-ic="music" data-tip="إضافة صوت / موسيقى"></button><input type="file" id="audf" accept="audio/*" multiple hidden>
+    <button class="ib" id="bsrt" data-ic="cc" data-tip="استيراد ترجمة SRT"></button><input type="file" id="srtf" accept=".srt,text/plain" hidden>
+    <button class="ib" id="addl" data-ic="layers" data-tip="إضافة طبقة جديدة"></button>
+    <span class="sep"></span>
+    <label class="ib" data-ic="magnet" data-tip="مغناطيس (الالتصاق)"><input type="checkbox" id="msnap" checked hidden></label>
+    <span class="sp"></span>
+    <label class="zoomw" data-tip="تكبير / تصغير التايم لاين"><span data-ic="zoom"></span><input type="range" id="zoom" min="10" max="240" value="60"></label>
   </div>
   <div id="wrap"><div id="tl"><div id="ruler"></div><div id="ovrows"></div><div id="track"></div><div id="head"></div></div></div>
-
-  <p class="hint">اضغط على الشريط العلوي للتنقل. اسحب الحافة الصفراء لأي مقطع لقصّ بدايته أو نهايته. التقديم والتأخير يغيّران ترتيب المقطع المحدد.</p>
-  <p class="msg" id="err"></p>
+</section>
+<div class="pop" id="expd" hidden>
+  <h4 style="margin:0 0 10px">إعدادات التصدير</h4>
+  <label class="fr">الدقة <select id="res"><option value="native">الدقة الأصلية للفيديو</option><option value="3840x2160">4K</option><option value="1920x1080">1080p</option><option value="1280x720">720p</option><option value="854x480">480p</option></select></label>
+  <label class="fr">الجودة <select id="q"><option value="25">عالية (25 Mbps)</option><option value="60" selected>عالية جدًا (60 Mbps)</option><option value="120">قصوى (120 Mbps)</option></select></label>
+  <label class="fr">الإطارات <select id="fps"><option value="24">24</option><option value="30" selected>30</option><option value="60">60</option></select></label>
+  <button id="go" class="pri" style="width:100%" disabled>ابدأ التصدير</button>
+  <p id="xmsg" style="color:var(--m);margin:8px 0 0"></p>
+  <p class="hintp" style="margin:6px 0 0">التصدير بالزمن الحقيقي: مدته = مدة الفيديو. أبقِ التبويب ظاهرًا حتى ينتهي.</p>
+  <div id="result" style="display:none"><video id="rv" controls></video><a id="dl">تحميل</a></div>
 </div>
-
-<div class="box" style="margin-top:12px">
-  <div class="row">
-    <label class="row">الدقة
-      <select id="res"><option value="native">الدقة الأصلية للفيديو</option><option value="3840x2160">4K</option><option value="1920x1080">1080p</option><option value="1280x720">720p</option><option value="854x480">480p</option></select>
-    </label>
-    <label class="row">الجودة
-      <select id="q"><option value="25">عالية (25 Mbps)</option><option value="60" selected>عالية جدًا (60 Mbps)</option><option value="120">قصوى (120 Mbps)</option></select>
-    </label>
-    <label class="row">الإطارات
-      <select id="fps"><option value="24">24</option><option value="30" selected>30</option><option value="60">60</option></select>
-    </label>
-    <button id="go" class="pri" disabled>تصدير الفيديو</button>
-    <span id="xmsg" style="color:var(--m)"></span>
-  </div>
-  <p class="hint">التصدير يتم بالزمن الحقيقي (مدة التصدير = مدة الفيديو). أبقِ التبويب ظاهرًا حتى ينتهي.</p>
-  <div id="out"><div id="res2"></div></div>
-  <div id="result" style="display:none;margin-top:12px"><video id="rv" controls></video><br><a id="dl" style="display:inline-block;margin-top:8px;background:#2e9d6a;color:#fff;text-decoration:none;padding:8px 18px;border-radius:8px;font-weight:700">تحميل</a></div>
-</div>
-
+<div class="banner" id="restore" hidden>يوجد مشروع محفوظ تلقائيًا <button class="pri" id="rsy">استعادة</button><button id="rsn">تجاهل</button></div>
+<div class="toast" id="err"></div>
 <script>
 const $=s=>document.querySelector(s);
 const cv=$('#cv'),g=cv.getContext('2d');
@@ -522,11 +586,11 @@ async function imp(files){
   if(bad.length)err('تعذّر قراءة: '+bad.join('، ')+' — الصيغة أو الكودك غير مدعوم في هذا المتصفح.');
   bin();
 }
-async function load(f){
+async function load(f,mid){
   audio();
   const v=document.createElement('video');v.src=URL.createObjectURL(f);v.preload='auto';v.playsInline=true;
   await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=no});
-  const m={name:f.name,v,dur:v.duration,thumb:''};
+  const m={mid:mid||++uid,file:f,name:f.name,v,dur:v.duration,thumb:''};
   const gn=AC.createGain();AC.createMediaElementSource(v).connect(gn);gn.connect(master);m.gain=gn;
   const sk=new Promise(r=>v.onseeked=r);v.currentTime=Math.min(.5,v.duration/2);await sk;
   const c=document.createElement('canvas');c.width=160;c.height=90;c.getContext('2d').drawImage(v,0,0,160,90);
@@ -536,7 +600,7 @@ function bin(){
   const B=$('#bin');B.innerHTML='';
   media.forEach(m=>{
     const e=document.createElement('div');e.className='item';
-    e.innerHTML='<img alt=""><div><b></b><small></small></div><div style="display:grid;gap:4px"><button class="a">+ تايم لاين</button><button class="o">+ فوق الفيديو</button></div>';
+    e.innerHTML='<img alt=""><div><b></b><small></small></div><div style="display:flex;gap:2px"><button class="a ib" data-tip="أضف إلى المسار الأساسي">'+IC.plus+'</button><button class="o ib" data-tip="أضف كطبقة فوق الفيديو">'+IC.pip+'</button></div>';
     e.querySelector('img').src=m.thumb;e.querySelector('b').textContent=m.name;e.querySelector('small').textContent=fmt(m.dur);
     e.querySelector('.o').onclick=()=>addVid(m);
     e.querySelector('.a').onclick=()=>{
@@ -561,14 +625,14 @@ function place(tt,play){
 }
 function setT(x){t=Math.min(Math.max(0,x),total());place(t,playing);head()}
 function stopPlay(){
-  playing=false;if(act)act.m.v.pause();$('#play').textContent='▶ تشغيل';
+  playing=false;if(act)act.m.v.pause();$('#play').innerHTML=PL(false);
   if(exporting&&rec&&rec.state==='recording')setTimeout(()=>rec.stop(),300);
 }
 function toggle(){
   if(!clips.length||exporting)return;
   if(playing){stopPlay();return}
   audio();if(t>=total()-.05)t=0;
-  playing=true;$('#play').textContent='⏸ إيقاف';place(t,true);
+  playing=true;$('#play').innerHTML=PL(true);place(t,true);
 }
 function loop(){
   if(playing&&act){
@@ -717,7 +781,7 @@ $('#go').onclick=()=>{
     $('#result').style.display='block';
   };
   exporting=true;spk.gain.value=0;$('#go').disabled=true;
-  rec.start(250);t=0;playing=true;$('#play').textContent='⏸ إيقاف';place(0,true);
+  rec.start(250);t=0;playing=true;$('#play').innerHTML=PL(true);place(0,true);
 };
 
 /* ===== الطبقات والنصوص ===== */
@@ -737,7 +801,7 @@ P('imgf').onchange=async e=>{
   for(const f of e.target.files){
     const img=new Image();img.src=URL.createObjectURL(f);
     try{await img.decode()}catch(x){err('تعذّر قراءة الصورة '+f.name);continue}
-    addOv({type:'image',img,name:f.name,w:.2,x:.88,y:.14,dur:5});
+    addOv({type:'image',img,file:f,fid:++uid,name:f.name,w:.2,x:.88,y:.14,dur:5});
   }
   e.target.value='';
 };
@@ -915,7 +979,7 @@ P('bundo').onclick=undo;P('bredo').onclick=redo;P('bdup').onclick=dup;P('bdet').
 P('badda').onclick=()=>P('audf').click();
 P('audf').onchange=async e=>{
   for(const f of e.target.files){
-    const o={type:'audio',name:f.name,in:0,dur:5,mute:false,vol:1};mkEl(o,URL.createObjectURL(f));
+    const o={type:'audio',file:f,fid:++uid,name:f.name,in:0,dur:5,mute:false,vol:1};mkEl(o,URL.createObjectURL(f));
     try{await new Promise((ok,no)=>{o.v.onloadedmetadata=ok;o.v.onerror=no})}catch(x){err('تعذّر قراءة '+f.name);continue}
     o.m={dur:o.v.duration};o.dur=o.v.duration;addOv(o);
   }
@@ -985,6 +1049,137 @@ P('fx').oninput=e=>{
 };
 P('frot90').onclick=()=>{const o=fxT();if(!o)return;snap();o.rot=(o.rot||0)+90;if(o.rot>180)o.rot-=360;fillFx()};
 P('freset').onclick=()=>{const o=fxT();if(!o)return;snap();FXALL.forEach(k=>delete o[k]);fillFx()};
+
+/* ===== الأيقونات والواجهة ===== */
+const ICP={
+ undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/>',
+ redo:'<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5 5.5 5.5 0 0 0 9.5 20H13"/>',
+ cut:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/>',
+ copy:'<rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+ trash:'<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>',
+ left:'<path d="m15 18-6-6 6-6"/>',right:'<path d="m9 18 6-6-6-6"/>',
+ mute:'<path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6M16 9l6 6"/>',
+ wave:'<path d="M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3"/>',
+ type:'<path d="M4 7V4h16v3M9 20h6M12 4v16"/>',
+ image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>',
+ music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+ cc:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h4M15 15h2M7 11h2M13 11h4"/>',
+ layers:'<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>',
+ play:'<path d="M6 3 20 12 6 21z" fill="currentColor"/>',
+ pause:'<rect x="6" y="4" width="4" height="16" fill="currentColor"/><rect x="14" y="4" width="4" height="16" fill="currentColor"/>',
+ zoom:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+ magnet:'<path d="m6 15-4-4 6.75-6.77a7.79 7.79 0 0 1 11 11L13 22l-4-4 6.39-6.36a2.14 2.14 0 0 0-3-3L6 15"/><path d="m5 8 4 4M12 15l4 4"/>',
+ rot:'<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',
+ reset:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+ download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+ file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/>',
+ plus:'<path d="M5 12h14M12 5v14"/>',
+ pip:'<rect x="2" y="4" width="20" height="16" rx="2"/><rect x="12" y="11" width="8" height="6" rx="1"/>'
+};
+const svg=n=>'<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+(ICP[n]||'')+'</svg>';
+const IC=new Proxy({},{get:(_,n)=>svg(n)});
+const PL=on=>on?svg('pause'):svg('play');
+document.querySelectorAll('[data-ic]').forEach(b=>b.insertAdjacentHTML('afterbegin',svg(b.dataset.ic)));
+document.querySelectorAll('[data-tip]').forEach(b=>{if(!b.getAttribute('aria-label'))b.setAttribute('aria-label',b.dataset.tip)});
+new MutationObserver(()=>{const e=P('err');if(e.textContent){clearTimeout(e._t);e._t=setTimeout(()=>e.textContent='',7000)}}).observe(P('err'),{childList:true,characterData:true,subtree:true});
+P('bexp').onclick=()=>{const x=P('expd');x.hidden=!x.hidden};
+{const _f=fillProps;fillProps=function(){_f();const o=so();P('nosel').style.display=fxT()?'none':'block';P('psub').style.display=o&&o.sub?'block':'none'}}
+
+/* ===== ترجمة SRT ===== */
+function parseSrt(txt){
+  const out=[],T=(h,m,sec,ms)=>(+h)*3600+(+m)*60+(+sec)+(+ms.padEnd(3,'0'))/1000;
+  txt.replace(/\r/g,'').split(/\n\s*\n/).forEach(b=>{
+    const l=b.trim().split('\n'),i=l.findIndex(x=>x.includes('-->'));if(i<0)return;
+    const m=l[i].match(/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/);if(!m)return;
+    const tx=l.slice(i+1).join('\n').replace(/<[^>]+>/g,'').trim();if(!tx)return;
+    out.push({s:T(m[1],m[2],m[3],m[4]),e:T(m[5],m[6],m[7],m[8]),t:tx});
+  });
+  return out;
+}
+P('bsrt').onclick=()=>P('srtf').click();
+P('srtf').onchange=async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  const cues=parseSrt((await f.text()).replace(/^\uFEFF/,''));
+  if(!cues.length){err('لم أجد ترجمة صالحة في الملف. تأكد أنه SRT بترميز UTF-8.');return}
+  snap();const r=nrows()+1;
+  cues.forEach(c=>ovs.push({id:++uid,type:'text',sub:true,text:c.t,font:'Cairo',fs:.055,col:'#ffffff',bold:true,bg:false,sw:8,sc:'#000000',x:.5,y:.9,w:.2,op:1,start:c.s,dur:Math.max(.2,c.e-c.s),row:r}));
+  build();
+};
+P('psub').onclick=()=>{
+  const o=so();if(!o||!o.sub)return;snap();
+  ovs.forEach(k=>{if(k.sub)['font','fs','col','bold','bg','sw','sc','x','y'].forEach(f=>k[f]=o[f])});
+};
+
+/* ===== الحفظ التلقائي في المتصفح ===== */
+const IDB=()=>new Promise((ok,no)=>{const r=indexedDB.open('mstudio',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+const kv=async(mode,k,v)=>{
+  const d=await IDB();
+  return new Promise((ok,no)=>{
+    const tx=d.transaction('kv',mode==='r'?'readonly':'readwrite'),st=tx.objectStore('kv');
+    const q=mode==='r'?st.get(k):mode==='w'?st.put(v,k):st.delete(k);
+    tx.oncomplete=()=>ok(q.result);tx.onerror=()=>no(tx.error);tx.onabort=()=>no(tx.error);
+  });
+};
+let lastJ='',saved=new Set(),restoring=false;
+function serial(){
+  const cl=clips.map(c=>{const x={...c,mid:c.m.mid};delete x.e;delete x.m;return x});
+  const ov=ovs.map(o=>{const x={...o};['e','img','v','g','m','file'].forEach(k=>delete x[k]);if(o.m&&o.m.mid)x.mid=o.m.mid;else if(o.m)x.adur=o.m.dur;return x});
+  return{clips:cl,ovs:ov,L,asp:P('asp').value,res:P('res').value,q:P('q').value,fps:P('fps').value};
+}
+async function autosave(){
+  if(restoring||(!clips.length&&!ovs.length))return;
+  const j=JSON.stringify(serial());if(j===lastJ)return;
+  try{
+    const need=[];
+    clips.forEach(c=>need.push([c.m.mid,c.m.file,c.m.name]));
+    ovs.forEach(o=>{if(o.m&&o.m.mid)need.push([o.m.mid,o.m.file,o.m.name]);else if(o.fid)need.push([o.fid,o.file,o.name])});
+    for(const[id,b,n]of need)if(b&&!saved.has(id)){await kv('w','b'+id,{name:n,blob:b});saved.add(id)}
+    await kv('w','proj',j);lastJ=j;
+    P('sav').textContent='تم الحفظ تلقائيًا '+new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){P('sav').textContent='تعذّر الحفظ التلقائي (مساحة المتصفح أو الخصوصية)'}
+}
+setInterval(autosave,4000);
+async function restoreProj(){
+  restoring=true;
+  try{
+    const pj=JSON.parse(await kv('r','proj')),ids=new Set();
+    pj.clips.forEach(c=>ids.add(c.mid));pj.ovs.forEach(o=>{if(o.mid)ids.add(o.mid)});
+    for(const id of ids){const r=await kv('r','b'+id);if(!r)continue;await load(new File([r.blob],r.name,{type:r.blob.type}),id);saved.add(id)}
+    bin();
+    const M=id=>media.find(m=>m.mid===id);
+    clips=pj.clips.filter(c=>M(c.mid)).map(c=>({...c,m:M(c.mid)}));
+    ovs=[];
+    for(const x of pj.ovs){
+      const o={...x};
+      if(o.type==='image'){
+        const r=await kv('r','b'+o.fid);if(!r)continue;
+        o.file=r.blob;o.img=new Image();o.img.src=URL.createObjectURL(r.blob);
+        try{await o.img.decode()}catch(e){continue}
+        saved.add(o.fid);
+      }else if(o.type==='video'||o.type==='audio'){
+        if(o.mid){o.m=M(o.mid);if(!o.m)continue;mkEl(o,o.m.v.src)}
+        else{const r=await kv('r','b'+o.fid);if(!r)continue;o.file=r.blob;o.m={dur:o.adur};mkEl(o,URL.createObjectURL(r.blob));saved.add(o.fid)}
+      }
+      ovs.push(o);
+    }
+    L=pj.L||2;
+    uid=Math.max(uid,...ids,...clips.map(c=>c.id),...pj.ovs.map(o=>Math.max(o.id,o.fid||0)));
+    P('asp').value=pj.asp;P('res').value=pj.res;P('q').value=pj.q;P('fps').value=pj.fps;
+    sel=null;U=[];Rd=[];t=0;build();fillProps();setT(0);
+    lastJ=JSON.stringify(serial());P('sav').textContent='تمت استعادة المشروع';
+  }catch(e){err('تعذّرت استعادة المشروع المحفوظ.')}
+  restoring=false;
+}
+kv('r','proj').then(j=>{if(j&&!clips.length)P('restore').hidden=false}).catch(()=>{});
+P('rsy').onclick=async()=>{P('restore').hidden=true;await restoreProj()};
+P('rsn').onclick=()=>{P('restore').hidden=true;kv('d','proj').catch(()=>{})};
+P('bnew').onclick=()=>{
+  if(!clips.length&&!ovs.length&&!media.length)return;
+  if(!confirm('بدء مشروع جديد؟ سيتم مسح المشروع الحالي من الشاشة.'))return;
+  stopPlay();clips=[];ovs=[];media=[];U=[];Rd=[];sel=null;act=null;t=0;lastJ='';
+  bin();build();fillProps();kv('d','proj').catch(()=>{});P('sav').textContent='';
+};
+fillProps();
 
 build();loop();
 <\/script>
